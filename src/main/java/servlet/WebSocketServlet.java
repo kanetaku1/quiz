@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,8 +20,11 @@ public class WebSocketServlet extends HttpServlet {
         } catch (DeploymentException e) {
             e.printStackTrace();
         }
-
-        // 次のページにリダイレクト
-        response.sendRedirect("roomSelection.jsp");
+        
+        // 次のページにフォワード
+        String view = "WEB-INF/roomSelection.jsp"; // JSP を相対パスで指定
+        RequestDispatcher dispatcher = request.getRequestDispatcher(view);
+        System.out.println("move to roomSelection.jsp");
+        dispatcher.forward(request, response); 
     }
 }

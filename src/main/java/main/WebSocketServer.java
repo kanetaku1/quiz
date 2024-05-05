@@ -8,7 +8,7 @@ public class WebSocketServer {
         String HoriutiLab = "192.168.11.14";
 
         // WebSocketサーバーを起動
-        Server server = new Server("localhost", 8025, "", null, WebSocketEndpoint.class);
+        Server server = new Server("localhost", 8025, "", null, main.WebSocketEndpoint.class);
         try {
             server.start();
         } catch (Exception e) {
