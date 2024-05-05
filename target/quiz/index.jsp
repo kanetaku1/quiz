@@ -1,3 +1,5 @@
+<%@page contentType="text/html; charset=UTF-8" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,9 +25,9 @@
         <h2>早押しクイズ　ボタンを押してスタート</h2>
     </div>
     
-    <a class="start-btn" href="form.jsp">
-        <img src="resources/image/スクリーンショット 2024-04-28 1.04.03.png">
+    <a class="start-btn" href="redirectToForm">
+        <img src="resources/スクリーンショット 2024-04-28 1.04.03.png">
     </a>
-    <img class="girl" src="resources/image/手が届く-removebg-preview.png">
+    <img class="girl" src="resources/手が届く-removebg-preview.png">
 </body>
 </html>
