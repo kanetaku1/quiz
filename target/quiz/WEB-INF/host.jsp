@@ -1,4 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*" %> 
+
+<%
+  List<String> genreList = (List<String>) request.getAttribute("genreList");
+%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,12 +17,13 @@
   <h1>
     ルーム作成
   </h1>
-  <button id="kari" onclick="getElement()">ボタン</button>
-  <select id="dropdown" onclick="displaySelectedItem()">
-    <option value="item1">-</option>
-    <option value="item2">国語</option>
-    <option value="item3">数学</option>
-    <option value="item4">英語</option>
+  <button id="select" onclick="startGame()">Start</button>
+  <select id="dropdown">
+    <option value="">-</option>
+    
+    <% for (String genre : genreList) { %>
+      <option value = "<%= genre %>"><%= genre %></option>
+    <% } %>
   </select>
   <br>
   <div id="log"></div>
@@ -55,6 +61,19 @@
       webSocket.send(message);
       messageInput.value = "";
     }
+
+    function startGame() {
+      // 選択されたジャンルを取得
+      var dropdown = document.getElementById("dropdown");
+      var selectedGenre = dropdown.value;
+
+      // リンク先のURLを構築
+      var url = "gameStart?genre=" + encodeURIComponent(selectedGenre);
+      
+      // リンク先に遷移
+      window.location.href = url;
+    }
+
   </script>
 
 </body>
