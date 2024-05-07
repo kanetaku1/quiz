@@ -2,4 +2,3 @@ main\WebSocketEndpoint.class
 servlet\ForwardFormServlet.class
 servlet\HostServlet.class
 servlet\WebSocketServlet.class
-main\WebSocketServer.class

@@ -18,7 +18,7 @@
 
   <script>
     // WebSocket接続
-    var webSocket = new WebSocket("ws://localhost:8025/websocket");
+    var webSocket = new WebSocket("ws://localhost:8888/quiz/websocket");
     var log = document.getElementById("log");
     
     webSocket.onopen = function(event) {

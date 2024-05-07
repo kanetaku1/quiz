@@ -13,10 +13,10 @@
         解答モード
     </h1>
     <button id ="create_room" class="solve_selectStart">
-        <a href="hostServlet">Start Room</a>
+        <a href="host">Start Room</a>
     </button>
     <button id ="join_room" class="solve_selectJoin">
-        <a href="WEB-INF/guest.jsp">Join Room</a>
+        <a href="guest">Join Room</a>
     </button>
 </body>
 </html>

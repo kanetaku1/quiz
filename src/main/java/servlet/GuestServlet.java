@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/host")
-public class HostServlet extends HttpServlet{
+@WebServlet("/guest")
+public class GuestServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String view = "WEB-INF/host.jsp"; // JSP を相対パスで指定
+    String view = "WEB-INF/guest.jsp"; // JSP を相対パスで指定
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);
-    System.out.println("move to host.jsp");
+    System.out.println("move to guest.jsp");
     dispatcher.forward(request, response); 
   }
 }
