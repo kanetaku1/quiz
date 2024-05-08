@@ -42,7 +42,9 @@ public class GetQuiz {
   }
 
   private void JsonAnalyzer(StringBuilder response){
-    System.out.println(response.toString());
+    imagePaths.clear();
+    questions.clear();
+    answers.clear();
     JSONArray jsonArray = new JSONArray(response.toString());
     for (int i = 0; i < jsonArray.length(); i++){
       JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -50,9 +52,9 @@ public class GetQuiz {
       String question = jsonObject.getString("question");
       String answer = jsonObject.getString("answer");
 
-      imagePaths.add(imagePath);
-      questions.add(question);
-      answers.add(answer);
+      this.imagePaths.add(imagePath);
+      this.questions.add(question);
+      this.answers.add(answer);
 
       // ここで取得したデータを利用して何かを行う
     }
