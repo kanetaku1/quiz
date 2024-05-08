@@ -13,13 +13,13 @@
     
     <div class="btn">
         <button>
-            <a href="search.jsp">閲覧モード</a>
+            <a href="forwardToSearch">閲覧モード</a>
         </button>
         <button>
             <a href="startWebSocket">回答モード</a>
         </button>
         <button>
-            <a href="make.jsp">作問モード</a>
+            <a href="makeMode">作問モード</a>
         </button>
         <button>
             <a href="#">設定</a>
