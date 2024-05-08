@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -8,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import main.GetQuiz;
 
@@ -23,6 +25,11 @@ public class SearchModeServlet extends HttpServlet {
     // ここでジャンルを使って何かを行う
     getQuiz.getQuizData(genre);
 
+    // ジャンルリストを取得&セット
+    HttpSession session = request.getSession();
+    List<String> genreList = (List<String>) session.getAttribute("genres");
+    request.setAttribute("genreList", genreList);
+
     System.out.println("Image Path: " + getQuiz.imagePaths);
     System.out.println("Question: " + getQuiz.questions);
     System.out.println("Answer: " + getQuiz.answers);
@@ -30,6 +37,7 @@ public class SearchModeServlet extends HttpServlet {
     request.setAttribute("imagePath", getQuiz.imagePaths);
     request.setAttribute("question", getQuiz.questions);
     request.setAttribute("answer", getQuiz.answers);
+    request.setAttribute("selectedGenre", genre);
 
     String view = "WEB-INF/search.jsp";
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);

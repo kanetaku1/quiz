@@ -9,10 +9,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import main.GetGenre;
 
-@WebServlet("/fowardToSearch")
+@WebServlet("/forwardToSearch")
 public class ForwardSearchServlet extends HttpServlet{
 
   GetGenre getGenre = new GetGenre();
@@ -24,6 +25,10 @@ public class ForwardSearchServlet extends HttpServlet{
     System.out.println("genreList: " + genreList);
     // 取得したデータをリクエスト属性に設定
     request.setAttribute("genreList", genreList);
+
+    // SearchModeServletへジャンルリストを引き継ぐ
+    HttpSession session = request.getSession();
+    session.setAttribute("genres", genreList);
 
     String view = "WEB-INF/search.jsp"; 
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);

@@ -1,8 +1,11 @@
 c:\gcc1\Java\quiz\src\main\java\main\GetGenre.java
 c:\gcc1\Java\quiz\src\main\java\servlet\ForwardFormServlet.java
+c:\gcc1\Java\quiz\src\main\java\servlet\SearchModeServlet.java
 c:\gcc1\Java\quiz\src\main\java\main\WebSocketEndpoint.java
+c:\gcc1\Java\quiz\src\main\java\servlet\MakeModeServlet.java
 c:\gcc1\Java\quiz\src\main\java\main\GetQuiz.java
 c:\gcc1\Java\quiz\src\main\java\servlet\GameServlet.java
 c:\gcc1\Java\quiz\src\main\java\servlet\HostServlet.java
 c:\gcc1\Java\quiz\src\main\java\servlet\WebSocketServlet.java
 c:\gcc1\Java\quiz\src\main\java\servlet\GuestServlet.java
+c:\gcc1\Java\quiz\src\main\java\servlet\ForwardSearchServlet.java
