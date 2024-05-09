@@ -19,7 +19,7 @@
             <a href="startWebSocket">回答モード</a>
         </button>
         <button>
-            <a href="makeMode">作問モード</a>
+            <a href="forwardToMake">作問モード</a>
         </button>
         <button>
             <a href="#">設定</a>

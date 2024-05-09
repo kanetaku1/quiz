@@ -34,7 +34,7 @@
     <h2><%= request.getAttribute("selectedGenre") %>の問題</h2>
     <%if (questionList != null) {
       for (String question : questionList) { %>
-        <p><a href = "<%= question %>"><%= question %></a></p>
+        <p><a href = "editQuiz?question=<%= question %>"><%= question %></a></p>
       <% } 
     } %>
   </div>
