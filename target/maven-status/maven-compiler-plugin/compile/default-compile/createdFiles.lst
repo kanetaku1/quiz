@@ -1,4 +1,13 @@
 servlet\HostServlet.class
+main\GetQuiz.class
+servlet\SearchModeServlet.class
+servlet\WebSocketServlet.class
+main\SendQuiz.class
+servlet\GameServlet.class
+servlet\ForwardMakeServlet.class
+main\GetGenre.class
 main\WebSocketEndpoint.class
 servlet\ForwardFormServlet.class
-servlet\WebSocketServlet.class
+servlet\MakeModeServlet.class
+servlet\ForwardSearchServlet.class
+servlet\GuestServlet.class

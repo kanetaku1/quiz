@@ -7,10 +7,17 @@
   <!-- <link rel="stylesheet" href="stylesheet.css"> -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>画像表示</title>
+  <title>作問モード</title>
 </head>
 <body>
-  <h2>問題のジャンル</h2>
+  <form action="makeMode" method="post" enctype="multipart/form-data">
+    <input type="file" name="imageFile"><br>
+    <input type="text" name="genre" placeholder="Enter genre"><br>
+    <input type="text" name="question" placeholder="Enter question"><br>
+    <input type="text" name="answer" placeholder="Enter answer"><br>
+    <input type="submit" value="Submit">
+  </form>
+  <!-- <h2>問題のジャンル</h2>
   <form action="someAction.jsp" method="post">
     <textarea name="sakumon" rows="2" cols="50"></textarea>
   </form>
@@ -61,6 +68,6 @@
   <h3 class="chat">
     <button type="submit">完了</button>
   </h3>
-  <h2></h2>
+  <h2></h2> -->
 </body>
 </html>
