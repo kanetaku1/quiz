@@ -1,0 +1,2 @@
+XAMPPのmysqlの起動エラーへの対処方法
+→https://urashita.com/archives/37775

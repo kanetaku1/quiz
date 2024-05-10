@@ -11,12 +11,45 @@
 </head>
 <body>
   <form action="makeMode" method="post" enctype="multipart/form-data">
-    <input type="file" name="imageFile"><br>
+    <input type="file" name="imageFile" id="image"><br>
+    <div id="upload"></div>
     <input type="text" name="genre" placeholder="Enter genre"><br>
     <input type="text" name="question" placeholder="Enter question"><br>
     <input type="text" name="answer" placeholder="Enter answer"><br>
     <input type="submit" value="Submit">
   </form>
+  <script>
+    function previewFile(file) {
+      // プレビュー画像を追加する要素
+      const preview = document.getElementById('upload');
+      // 以前のプレビューを削除
+      preview.innerHTML = '';
+
+      // FileReaderオブジェクトを作成
+      const reader = new FileReader();
+
+      // ファイルが読み込まれたときに実行する
+      reader.onload = function (e) {
+        const img = document.createElement("img"); // img要素を作成
+        img.src = e.target.result; // 画像のURLをimg要素にセット
+        img.style.maxWidth = "100%"
+        preview.appendChild(img); // #previewの中に追加
+      }
+
+      // いざファイルを読み込む
+      reader.readAsDataURL(file);
+    }
+
+    // <input>でファイルが選択されたときの処理
+    const fileInput = document.getElementById('image');
+    const handleFileSelect = () => {
+      const files = fileInput.files;
+      if (files.length > 0) {
+        previewFile(files[0]); // 最初のファイルのみをプレビュー
+      }
+    }
+    fileInput.addEventListener('change', handleFileSelect);
+  </script>
   <!-- <h2>問題のジャンル</h2>
   <form action="someAction.jsp" method="post">
     <textarea name="sakumon" rows="2" cols="50"></textarea>
