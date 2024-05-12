@@ -38,6 +38,14 @@
 
     webSocket.onmessage = function(event) {
       log.innerHTML += "<p>" + event.data + "</p>";
+      // hostがスタートボタンを押したら画面遷移
+      if (event.data == "host: push startButton"){
+        // リンク先のURLを構築
+        var url = "forwardToGame?userType=GUEST";
+        // リンク先に遷移
+        window.location.href = url;
+        webSocket.onclose();
+      }
     }
 
     function sendMessage() {

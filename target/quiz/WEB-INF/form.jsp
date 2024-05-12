@@ -16,7 +16,7 @@
             <a href="forwardToSearch">閲覧モード</a>
         </button>
         <button>
-            <a href="startWebSocket">回答モード</a>
+            <a href="forwardToQuiz">回答モード</a>
         </button>
         <button>
             <a href="forwardToMake">作問モード</a>

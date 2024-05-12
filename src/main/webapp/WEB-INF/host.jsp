@@ -17,7 +17,7 @@
   <h1>
     ルーム作成
   </h1>
-  <button id="select" onclick="startGame()">Start</button>
+  <button id="select">Start</button>
   <select id="dropdown">
     <option value="">-</option>
     
@@ -62,18 +62,21 @@
       messageInput.value = "";
     }
 
-    function startGame() {
+    document.getElementById("select").addEventListener("click", function(){
       // 選択されたジャンルを取得
       var dropdown = document.getElementById("dropdown");
       var selectedGenre = dropdown.value;
 
+      // クライアントへ画面遷移のためのワードを送信
+      var keyword = "host: push startButton";
+      webSocket.send(keyword);
+      webSocket.onclose();
+
       // リンク先のURLを構築
-      var url = "gameStart?genre=" + encodeURIComponent(selectedGenre);
-      
+      var url = "forwardToGame?userType=HOST&genre="+ encodeURIComponent(selectedGenre);  
       // リンク先に遷移
       window.location.href = url;
-    }
-
+    });
   </script>
 
 </body>

@@ -16,6 +16,9 @@ public class WebSocketEndpoint {
         synchronized(sessions) {
             // 全てのクライアントにメッセージを送信
             for(Session s : sessions) {
+                if (message.startsWith("host: push startButton")){
+                    s.getBasicRemote().sendText(message);
+                }
                 s.getBasicRemote().sendText(session.getId() + ": "+message);
             }
         }

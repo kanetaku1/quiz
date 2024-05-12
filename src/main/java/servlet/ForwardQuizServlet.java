@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/startWebSocket")
-public class WebSocketServlet extends HttpServlet {
+@WebServlet("/forwardToQuiz")
+public class ForwardQuizServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 次のページにフォワード
         String view = "WEB-INF/roomSelection.jsp"; // JSP を相対パスで指定
