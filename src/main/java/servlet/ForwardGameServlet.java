@@ -1,6 +1,5 @@
 package servlet;
 
-import main.GetQuiz;
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/forwardToGame")
 public class ForwardGameServlet extends HttpServlet {
 
-  GetQuiz getQuiz = new GetQuiz();
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String userType = request.getParameter("userType");
     request.setAttribute("userType", userType);

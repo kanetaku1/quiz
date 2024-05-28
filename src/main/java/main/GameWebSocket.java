@@ -23,9 +23,9 @@ public class GameWebSocket {
   private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
   private int currentQuestionIndex = -1;
-  private List<String> imagePaths = new ArrayList<>();
-  private List<String> questions = new ArrayList<>();
-  private List<String> answers = new ArrayList<>();
+  // private List<String> imagePaths = new ArrayList<>();
+  // private List<String> questions = new ArrayList<>();
+  // private List<String> answers = new ArrayList<>();
 
   @OnMessage
   public void onMessage(String message, Session session) throws IOException {
@@ -47,12 +47,12 @@ public class GameWebSocket {
         // ここでジャンルを使って何かを行う
         getQuiz.getQuizData(genre);
 
-        System.out.println("Image Path: " + getQuiz.imagePaths);
-        System.out.println("Question: " + getQuiz.questions);
-        System.out.println("Answer: " + getQuiz.answers);
-        this.imagePaths = getQuiz.imagePaths;
-        this.questions = getQuiz.questions;
-        this.answers = getQuiz.answers;
+        // System.out.println("Image Path: " + getQuiz.imagePaths);
+        // System.out.println("Question: " + getQuiz.questions);
+        // System.out.println("Answer: " + getQuiz.answers);
+        // this.imagePaths = getQuiz.imagePaths;
+        // this.questions = getQuiz.questions;
+        // this.answers = getQuiz.answers;
       } else if (messageType.equals("nextQuiz")){
         sendNextQuestion();
         // 他のメッセージの種類に対する処理
@@ -94,10 +94,10 @@ public class GameWebSocket {
 
   private void sendNextQuestion() throws IOException {
     currentQuestionIndex++;
-    System.out.println("next Question id: " + currentQuestionIndex + ", question size: " + this.questions.size() + " questions: " + this.questions + " imagePaths: " + this.imagePaths);
-    if (currentQuestionIndex < this.questions.size()) {
-        String question = this.questions.get(currentQuestionIndex);
-        String imagePath = this.imagePaths.get(currentQuestionIndex);
+    // System.out.println("next Question id: " + currentQuestionIndex + ", question size: " + this.questions.size() + " questions: " + this.questions + " imagePaths: " + this.imagePaths);
+    if (currentQuestionIndex < getQuiz.quizList.getQuestions().size()) {
+        String question = getQuiz.quizList.getQuestions().get(currentQuestionIndex);
+        String imagePath = getQuiz.quizList.getImagePaths().get(currentQuestionIndex);
         sendMessageToAll("問題:" + question);
         sendMessageToAll("写真:" + imagePath);
     } else {
