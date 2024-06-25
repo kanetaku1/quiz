@@ -25,7 +25,7 @@
         <h2>早押しクイズ　ボタンを押してスタート</h2>
     </div>
     
-    <a class="start-btn" href="forwardToForm">
+    <a class="start-btn" href="forwardToUser">
         <img src="resources/スクリーンショット 2024-04-28 1.04.03.png">
     </a>
     <img class="girl" src="resources/手が届く-removebg-preview.png">
