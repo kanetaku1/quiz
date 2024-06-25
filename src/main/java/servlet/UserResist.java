@@ -10,12 +10,11 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-import main.User;
 import main.User.UserType;
 import main.UserManager;
 
-@WebServlet("/forwardToForm")
-public class ForwardFormServlet extends HttpServlet{
+@WebServlet("/userResist")
+public class UserResist extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -29,19 +28,13 @@ public class ForwardFormServlet extends HttpServlet{
 
 		// Jspのフォーム画面からユーザ情報を取得
 		request.setCharacterEncoding("UTF-8");
-		String user_name = request.getParameter("Username");
+		String username = request.getParameter("Username");
 		
-		// ユーザ情報格納クラスをインスタンス
-		UserManager user = new UserManager();
-		
-		// ユーザ情報を格納する
-		
+		String sessionId = request.getSession().getId();
+		UserManager.addUser(sessionId, username, UserType.GUEST);
+
 		// セッションスコープに登録ユーザを保存
 		HttpSession session = request.getSession();
-		
-		// 画面へ遷移
-		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/jsp/userinfo_session.jsp");
-		rd.forward(request, response);
-		
+		session.setAttribute("user", UserManager.getUser(sessionId));
 	}
 }

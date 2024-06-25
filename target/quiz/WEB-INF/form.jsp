@@ -9,7 +9,19 @@
     <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
-    <label for="name"><h4> ユーザ名 :  </h4>  <input type="text" id="name" name="name" required minlength="0" maxlength="20" size="25" /></label>
+    <%
+        User user = (User) session.getAttribute("user");
+    %>
+    <label>
+        <h4> ユーザ名 :  
+            <% if(user != null){
+                out.println(user.getUsername());
+            } else{
+                out.println("no name");
+            }
+            %>
+        </h4>
+    </label>
     
     <div class="btn">
         <button>
