@@ -10,8 +10,9 @@
     <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
-    <%
-        User user = (User) session.getAttribute("user");
+    <% 
+        User user = (User) session.getAttribute("user"); 
+        user.setUserType(User.UserType.GUEST);
     %>
     <label>
         <h4> ユーザ名 :  

@@ -1,8 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %> 
+<%@ page import="main.User" %>
 
 <%
   List<String> genreList = (List<String>) request.getAttribute("genreList");
+  User user = (User) session.getAttribute("user");
+  user.setUserType(User.UserType.HOST);
 %>
 
 <!DOCTYPE html>
@@ -73,7 +76,7 @@
       webSocket.onclose();
 
       // リンク先のURLを構築
-      var url = "forwardToGame?userType=HOST&genre="+ encodeURIComponent(selectedGenre);  
+      var url = "forwardToGame?genre="+ encodeURIComponent(selectedGenre);  
       // リンク先に遷移
       window.location.href = url;
     });

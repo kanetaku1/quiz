@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="main.User" %>
+<%@ page import="main.User.UserType" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,9 +11,13 @@
 </head>
 <body>
   <p id="user">
-    <%= request.getAttribute("userType") %>
+    <% 
+      User user = (User) session.getAttribute("user");
+      UserType userType = user.getUserType();
+      System.out.println(userType);
+    %>
   </p>
-  <% if(request.getAttribute("userType").equals("HOST")){ %>
+  <% if(userType == User.UserType.valueOf("HOST")){ %>
     <h1>ジャンル</h1>
     <p id="genre">
       <%= request.getAttribute("selectedGenre") %>

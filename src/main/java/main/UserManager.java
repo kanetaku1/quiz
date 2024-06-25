@@ -1,25 +1,21 @@
 package main;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import main.User.UserType;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.websocket.Session;
 
 public class UserManager {
-  private static Map<String, User> userMap = new HashMap<>();
+  private static Map<Session, User> userMap = new ConcurrentHashMap<>();
 
-    // ユーザーを追加するメソッド
-    public static void addUser(String sessionId, String username, UserType userType) {
-      userMap.put(sessionId, new User(username, userType));
-    }
+  public static void addUser(Session session, User user) {
+      userMap.put(session, user);
+  }
 
-    // ユーザーを削除するメソッド
-    public static void removeUser(String sessionId) {
-      userMap.remove(sessionId);
-    }
+  public static void removeUser(Session session) {
+      userMap.remove(session);
+  }
 
-    // セッションIDからユーザーを取得するメソッド
-    public static User getUser(String sessionId) {
-      return userMap.get(sessionId);
-    }
+  public static User getUser(Session session) {
+      return userMap.get(session);
+  }
 }

@@ -4,50 +4,93 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint("/websocket")
+import javax.servlet.http.HttpSession;
+import javax.websocket.*;
+import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@ServerEndpoint(value = "/websocket", configurator = WebSocketEndpoint.Configurator.class)
 public class WebSocketEndpoint {
+    private static Map<Session, HttpSession> httpSessionMap = new ConcurrentHashMap<>();
+
     private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+
+    public static class Configurator extends ServerEndpointConfig.Configurator {
+        @Override
+        public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
+            HttpSession httpSession = (HttpSession) request.getHttpSession();
+            config.getUserProperties().put(HttpSession.class.getName(), httpSession);
+        }
+    }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-        synchronized(sessions) {
-            // 全てのクライアントにメッセージを送信
-            for(Session s : sessions) {
-                if (message.startsWith("host: push startButton")){
-                    s.getBasicRemote().sendText(message);
+        User user = UserManager.getUser(session);
+        if (user != null) {
+            String username = user.getUsername();
+            // メッセージをすべてのセッションにブロードキャスト
+            for (Session s : session.getOpenSessions()) {
+                if (s.isOpen()) {
+                    try {
+                        s.getBasicRemote().sendText(username + ": " + message);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                s.getBasicRemote().sendText(session.getId() + ": "+message);
             }
         }
     }
 
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(Session session, EndpointConfig config) {
+        HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+        httpSessionMap.put(session, httpSession);
+
         // クライアントが接続したときにログに追加
         sessions.add(session);
-        sendMessageToAll(session.getId() + " joined the chat");
-    }
-
-    @OnClose
-    public void onClose(Session session) {
-        // クライアントが切断されたときにログに追加
-        sessions.remove(session);
-        sendMessageToAll(session.getId() + " left the chat");
-    }
-
-    private void sendMessageToAll(String message) {
-        synchronized(sessions) {
-            // 全てのクライアントにメッセージを送信
-            for(Session s : sessions) {
+        User user = (User) httpSession.getAttribute("user");
+        if (user != null) {
+            UserManager.addUser(session, user);
+            for (Session s : session.getOpenSessions()) {
                 try {
-                    s.getBasicRemote().sendText(message);
+                    s.getBasicRemote().sendText(user.getUsername() + " joined this room");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    @OnClose
+    public void onClose(Session session) {
+        // クライアントが切断されたときにログに追加
+        User user = UserManager.getUser(session);
+        if (user != null) {
+            String username = user.getUsername();
+            // メッセージをすべてのセッションにブロードキャスト
+            for (Session s : session.getOpenSessions()) {
+                if (s.isOpen()) {
+                    try {
+                        s.getBasicRemote().sendText(username + ": " + "left this room");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        UserManager.removeUser(session);
+        sessions.remove(session);
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        httpSessionMap.remove(session);
+        UserManager.removeUser(session);
+        throwable.printStackTrace();
     }
 }

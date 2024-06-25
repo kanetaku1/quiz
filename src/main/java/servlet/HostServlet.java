@@ -15,6 +15,7 @@ import java.util.List;
 public class HostServlet extends HttpServlet{
 
   GetGenre getGenre = new GetGenre();
+
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // APIからデータを取得
     List<String> genreList = getGenre.getDataFromAPI();
