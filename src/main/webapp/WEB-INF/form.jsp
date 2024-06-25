@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="main.User" %> 
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +23,7 @@
             %>
         </h4>
     </label>
-    
+
     <div class="btn">
         <button>
             <a href="forwardToSearch">閲覧モード</a>

@@ -17,18 +17,11 @@ import main.UserManager;
 public class UserResist extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String view = "WEB-INF/form.jsp"; // JSP を相対パスで指定
-    RequestDispatcher dispatcher = request.getRequestDispatcher(view);
-    System.out.println("move to form.jsp");
-    dispatcher.forward(request, response); 
-	}
-
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		// Jspのフォーム画面からユーザ情報を取得
 		request.setCharacterEncoding("UTF-8");
-		String username = request.getParameter("Username");
+		String username = request.getParameter("username");
 		
 		String sessionId = request.getSession().getId();
 		UserManager.addUser(sessionId, username, UserType.GUEST);
@@ -36,5 +29,10 @@ public class UserResist extends HttpServlet{
 		// セッションスコープに登録ユーザを保存
 		HttpSession session = request.getSession();
 		session.setAttribute("user", UserManager.getUser(sessionId));
+
+		String view = "WEB-INF/form.jsp"; // JSP を相対パスで指定
+    RequestDispatcher dispatcher = request.getRequestDispatcher(view);
+    System.out.println("move to form.jsp");
+    dispatcher.forward(request, response);
 	}
 }

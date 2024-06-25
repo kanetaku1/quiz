@@ -8,11 +8,10 @@
   <title>User Resist</title>
 </head>
 <body>
-  <div class="send">
-    <label for="username"><h4> ユーザ名 :  </h4>  <input type="text" id="username" name="username" required minlength="0" maxlength="20" size="25" /></label>
-    <form action="userResist" method="">
-      <input type="submit" value="送信する">
-    </form>
-  </div>
-
+  <form action="userResist" method="post">
+    <div class="send">
+      <label for="username"><h4> ユーザ名 :  </h4>  <input type="text" id="username" name="username" required minlength="0" maxlength="20" size="25" /></label>
+        <input type="submit" value="送信する">
+    </div>
+  </form>
 </body>
