@@ -22,6 +22,7 @@
   <h1>写真パス</h1>
   <img id="image" src="#">
   <div id="log"></div>
+  <!-- //解答システム -->
   <script>
     var log = document.getElementById("log");
     var quiz = document.getElementById("quiz");
@@ -81,6 +82,15 @@
         genre: key,
       }
       webSocket.send(JSON.stringify(message));
+    }
+
+    //一文字ずつ表示
+    function displayCharbychar(problemStatement){
+      for(let i=0;i<problemStatement.length;i++){
+        setTimeout(function() {
+        quizElement.textContent += message[i];
+        }, 200);//200ms間隔
+      }
     }
 
   </script>
