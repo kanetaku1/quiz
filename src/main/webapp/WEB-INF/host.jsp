@@ -1,11 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %> 
-<%@ page import="main.User" %>
 
 <%
   List<String> genreList = (List<String>) request.getAttribute("genreList");
-  User user = (User) session.getAttribute("user");
-  user.setUserType(User.UserType.HOST);
 %>
 
 <!DOCTYPE html>

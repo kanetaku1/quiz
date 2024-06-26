@@ -1,9 +1,6 @@
 package main;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.*;
@@ -18,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebSocketEndpoint {
     private static Map<Session, HttpSession> httpSessionMap = new ConcurrentHashMap<>();
 
-    private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+    // private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
     public static class Configurator extends ServerEndpointConfig.Configurator {
         @Override
@@ -37,7 +34,11 @@ public class WebSocketEndpoint {
             for (Session s : session.getOpenSessions()) {
                 if (s.isOpen()) {
                     try {
-                        s.getBasicRemote().sendText(username + ": " + message);
+                        if(message.equals("host: push startButton")){
+                            s.getBasicRemote().sendText(message);
+                        } else{
+                            s.getBasicRemote().sendText(username + ": " + message);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -50,9 +51,7 @@ public class WebSocketEndpoint {
     public void onOpen(Session session, EndpointConfig config) {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         httpSessionMap.put(session, httpSession);
-
         // クライアントが接続したときにログに追加
-        sessions.add(session);
         User user = (User) httpSession.getAttribute("user");
         if (user != null) {
             UserManager.addUser(session, user);
@@ -84,7 +83,6 @@ public class WebSocketEndpoint {
             }
         }
         UserManager.removeUser(session);
-        sessions.remove(session);
     }
 
     @OnError

@@ -5,13 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpSession;
-import javax.websocket.EndpointConfig;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
@@ -19,7 +13,7 @@ import javax.websocket.server.ServerEndpointConfig;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@ServerEndpoint(value = "/gameWebSocket", configurator = WebSocketEndpoint.Configurator.class)
+@ServerEndpoint(value = "/gameWebSocket", configurator = GameWebSocket.Configurator.class)
 public class GameWebSocket {
 
   GetQuiz getQuiz = new GetQuiz();

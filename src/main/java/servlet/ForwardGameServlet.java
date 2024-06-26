@@ -22,7 +22,9 @@ public class ForwardGameServlet extends HttpServlet {
     if(user.getUserType() == User.UserType.valueOf("HOST")){
       String genre = request.getParameter("genre");
       request.setAttribute("selectedGenre", genre);
+      System.out.println(user.getUsername() + " is HOST");
     }
+    System.out.println(user.getUsername() + " is GUEST");
 
     String view = "WEB-INF/game.jsp";
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);
