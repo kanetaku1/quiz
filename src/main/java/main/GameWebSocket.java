@@ -1,60 +1,60 @@
 package main;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpSession;
+import javax.websocket.EndpointConfig;
+import javax.websocket.HandshakeResponse;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@ServerEndpoint("/gameWebSocket")
+@ServerEndpoint(value = "/gameWebSocket", configurator = WebSocketEndpoint.Configurator.class)
 public class GameWebSocket {
 
   GetQuiz getQuiz = new GetQuiz();
-  private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+  // private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+  private static Map<Session, HttpSession> httpSessionMap = new ConcurrentHashMap<>();
 
   private int currentQuestionIndex = -1;
   // private List<String> imagePaths = new ArrayList<>();
   // private List<String> questions = new ArrayList<>();
   // private List<String> answers = new ArrayList<>();
 
+  public static class Configurator extends ServerEndpointConfig.Configurator {
+    @Override
+    public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
+      HttpSession httpSession = (HttpSession) request.getHttpSession();
+      config.getUserProperties().put(HttpSession.class.getName(), httpSession);
+    }
+  }
+
   @OnMessage
   public void onMessage(String message, Session session) throws IOException {
-
     // 受信したメッセージの解析
     try {
       // 受信したメッセージをJSON形式としてパース
       JSONObject jsonMessage = new JSONObject(message);
-
       // メッセージから"type"フィールドの値を取得
       String messageType = jsonMessage.getString("type");
-
       // メッセージの種類に応じて処理を実行
-      // stargGameを受け取った場合
       System.out.println("messageType: " + messageType);
       if (messageType.equals("startGame")) {
         // ゲームを開始するための処理
         String genre = jsonMessage.getString("genre");
-        // ここでジャンルを使って何かを行う
         getQuiz.getQuizData(genre);
-
-        // System.out.println("Image Path: " + getQuiz.imagePaths);
-        // System.out.println("Question: " + getQuiz.questions);
-        // System.out.println("Answer: " + getQuiz.answers);
-        // this.imagePaths = getQuiz.imagePaths;
-        // this.questions = getQuiz.questions;
-        // this.answers = getQuiz.answers;
       } else if (messageType.equals("nextQuiz")){
-        sendNextQuestion();
+        sendNextQuestion(session);
         // 他のメッセージの種類に対する処理
       } else {
 
@@ -66,25 +66,42 @@ public class GameWebSocket {
   }
 
   @OnOpen
-  public void onOpen(Session session) {
-      // クライアントが接続したときにログに追加
-      sessions.add(session);
-      sendMessageToAll(session.getId() + " joined the chat");
+  public void onOpen(Session session,  EndpointConfig config) {
+    HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+    httpSessionMap.put(session, httpSession);
+    // クライアントが接続したときにログに追加
+    User user = (User) httpSession.getAttribute("user");
+    if (user != null) UserManager.addUser(session, user);
+    String message = "joined this room";
+    sendMessageToAll(session, message, user);
   }
 
   @OnClose
   public void onClose(Session session) {
-      // クライアントが切断されたときにログに追加
-      sessions.remove(session);
-      sendMessageToAll(session.getId() + " left the chat");
+    // クライアントが切断されたときにログに追加
+    User user = UserManager.getUser(session);
+    String message = "left this room";
+    sendMessageToAll(session, message, user);
+    UserManager.removeUser(session);
   }
 
-  private void sendMessageToAll(String message) {
-    synchronized(sessions) {
-      // 全てのクライアントにメッセージを送信
-      for(Session s : sessions) {
+  @OnError
+  public void onError(Session session, Throwable throwable) {
+      httpSessionMap.remove(session);
+      UserManager.removeUser(session);
+      throwable.printStackTrace();
+  }
+
+  private void sendMessageToAll(Session session, String message, User  user) {
+    String username = "";
+    if (user != null) {
+      username = user.getUsername() + ": ";
+    }  
+    // メッセージをすべてのセッションにブロードキャスト
+    for (Session s : session.getOpenSessions()) {
+      if (s.isOpen()) {
         try {
-          s.getBasicRemote().sendText(message);
+          s.getBasicRemote().sendText(username + message);
         } catch (IOException e) {
           e.printStackTrace();
         }
@@ -92,16 +109,17 @@ public class GameWebSocket {
     }
   }
 
-  private void sendNextQuestion() throws IOException {
+  private void sendNextQuestion(Session session) throws IOException {
     currentQuestionIndex++;
     // System.out.println("next Question id: " + currentQuestionIndex + ", question size: " + this.questions.size() + " questions: " + this.questions + " imagePaths: " + this.imagePaths);
     if (currentQuestionIndex < getQuiz.quizList.getQuestions().size()) {
-        String question = getQuiz.quizList.getQuestions().get(currentQuestionIndex);
-        String imagePath = getQuiz.quizList.getImagePaths().get(currentQuestionIndex);
-        sendMessageToAll("問題:" + question);
-        sendMessageToAll("写真:" + imagePath);
+      String question = "問題:" + getQuiz.quizList.getQuestions().get(currentQuestionIndex);
+      String imagePath = "写真:" + getQuiz.quizList.getImagePaths().get(currentQuestionIndex);
+      sendMessageToAll(session, question, null);
+      sendMessageToAll(session, imagePath, null);
     } else {
-        sendMessageToAll("問題はこれで終了です。");
+      String finish = "問題はこれで終了です";
+        sendMessageToAll(session, finish, null);
         // ここで必要な後処理を行う（例：最終結果を表示するなど）
     }
   }

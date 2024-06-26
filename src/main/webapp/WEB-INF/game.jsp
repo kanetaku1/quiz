@@ -14,8 +14,8 @@
     <% 
       User user = (User) session.getAttribute("user");
       UserType userType = user.getUserType();
-      System.out.println(userType);
     %>
+    <%= userType %>
   </p>
   <% if(userType == User.UserType.valueOf("HOST")){ %>
     <h1>ジャンル</h1>
