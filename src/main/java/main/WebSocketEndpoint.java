@@ -50,9 +50,6 @@ public class WebSocketEndpoint {
                     }
                 }
             }
-        } else {
-            System.err.println("user is none");
-            session.getBasicRemote().sendText("user is none in this session");
         }
     }
 
@@ -97,7 +94,6 @@ public class WebSocketEndpoint {
                 }
             }
         }
-        UserManager.removeUser(sessionId);
     }
 
     @OnError
