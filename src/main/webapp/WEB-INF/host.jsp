@@ -31,13 +31,15 @@
   <div id="log"></div>
   <input type="text" id="message" placeholder="Type a message...">
   <button onclick="sendMessage()">Send</button>
+  <!-- UserManager.addUser(sessionId, user); -->
 
 <%
-  User user = (User) session.getAttribute("user"); 
   if (session != null) {
     String sessionId = session.getId();
-    UserManager.addUser(sessionId, user);
 %>
+  <p>
+    <%= sessionId %> 
+  </p>
   <script>
     // WebSocket接続
     var webSocket = new WebSocket("ws://localhost:8888/quiz/websocket/<%= sessionId %>");

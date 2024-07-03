@@ -19,11 +19,12 @@
   <button onclick="sendMessage()">Send</button>
 
 <%
-  User user = (User) session.getAttribute("user");
   if (session != null) {
     String sessionId = session.getId();
-    UserManager.addUser(sessionId, user);
 %>
+  <p>
+    <%= sessionId %> 
+  </p>
   <script>
     // WebSocket接続
     var webSocket = new WebSocket("ws://localhost:8888/quiz/websocket/<%= sessionId %>");

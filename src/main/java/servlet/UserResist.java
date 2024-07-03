@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import main.User.UserType;
 import main.User;
+import main.UserManager;
 
 @WebServlet("/userResist")
 public class UserResist extends HttpServlet{
@@ -28,6 +29,8 @@ public class UserResist extends HttpServlet{
 		// セッションスコープに登録ユーザを保存
 		HttpSession session = request.getSession();
 		session.setAttribute("user", user);
+		String sessionId = session.getId();
+		UserManager.addUser(sessionId, user);
 
 		String view = "WEB-INF/form.jsp"; // JSP を相対パスで指定
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);

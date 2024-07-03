@@ -31,7 +31,7 @@ public class HostServlet extends HttpServlet{
 
     String view = "WEB-INF/host.jsp"; 
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);
-    System.out.println(user.getUsername() + "move to host.jsp");
+    System.out.println(user.getUsername() + " move to host.jsp");
     dispatcher.forward(request, response); 
   }
 }

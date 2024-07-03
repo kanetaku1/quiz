@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="main.User" %>
-<%@ page import="main.User.UserType" %>
+<%@ page import="main.UserManager" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,12 +12,12 @@
 <body>
   <p id="user">
     <% 
-      User user = (User) session.getAttribute("user");
-      UserType userType = user.getUserType();
+      String sessionId = session.getId();
+      User user = (User) UserManager.getUser(sessionId);
     %>
-    <%= userType %>
+    <%= user.getUserType() %>
   </p>
-  <% if(userType == User.UserType.valueOf("HOST")){ %>
+  <% if(user.getUserType() == User.UserType.valueOf("HOST")){ %>
     <h1>ジャンル</h1>
     <p id="genre">
       <%= request.getAttribute("selectedGenre") %>
@@ -28,6 +28,10 @@
   <h1>写真パス</h1>
   <img id="image" src="#">
   <div id="log"></div>
+
+<% 
+  if (session != null) {
+%>
   <script>
     var log = document.getElementById("log");
     var quiz = document.getElementById("quiz");
@@ -36,7 +40,7 @@
     const genre = document.getElementById("genre");
 
     // WebSocket接続
-    var webSocket = new WebSocket("ws://localhost:8888/quiz/gameWebSocket");
+    var webSocket = new WebSocket("ws://localhost:8888/quiz/gameWebSocket/<%= sessionId %>");
 
     webSocket.onopen = function(event) {
       console.log("WebSocket connection opened.");
@@ -46,7 +50,7 @@
         console.log("request next Quiz.");
         setTimeout(function() {
           requestNextQuiz();
-        }, 2000);       
+        }, 3000);       
       }
     };
 
@@ -90,6 +94,8 @@
     }
 
   </script>
-
+<%
+}
+%>
 </body>
 </html>
