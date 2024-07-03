@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.*" %> 
+<%@ page import="main.User" %>
+<%@ page import="main.UserManager" %>
 
 <%
   List<String> genreList = (List<String>) request.getAttribute("genreList");
@@ -30,9 +32,15 @@
   <input type="text" id="message" placeholder="Type a message...">
   <button onclick="sendMessage()">Send</button>
 
+<%
+  User user = (User) session.getAttribute("user"); 
+  if (session != null) {
+    String sessionId = session.getId();
+    UserManager.addUser(sessionId, user);
+%>
   <script>
     // WebSocket接続
-    var webSocket = new WebSocket("ws://localhost:8888/quiz/websocket");
+    var webSocket = new WebSocket("ws://localhost:8888/quiz/websocket/<%= sessionId %>");
     var log = document.getElementById("log");
     
     webSocket.onopen = function(event) {
@@ -78,6 +86,8 @@
       window.location.href = url;
     });
   </script>
-
+<%
+}
+%>
 </body>
 </html>

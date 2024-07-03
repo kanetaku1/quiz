@@ -5,29 +5,35 @@ import java.io.IOException;
 import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@ServerEndpoint(value = "/websocket", configurator = WebSocketEndpoint.Configurator.class)
+// , configurator = WebSocketEndpoint.Configurator.class
+@ServerEndpoint("/websocket/{sessionId}")
 public class WebSocketEndpoint {
-    private static Map<Session, HttpSession> httpSessionMap = new ConcurrentHashMap<>();
+    private Session session;
+    private String sessionId;
+    private User user;
+
+    // private static Map<Session, HttpSession> httpSessionMap = new ConcurrentHashMap<>();
 
     // private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
 
-    public static class Configurator extends ServerEndpointConfig.Configurator {
-        @Override
-        public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
-            HttpSession httpSession = (HttpSession) request.getHttpSession();
-            config.getUserProperties().put(HttpSession.class.getName(), httpSession);
-        }
-    }
+    // public static class Configurator extends ServerEndpointConfig.Configurator {
+    //     @Override
+    //     public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
+    //         HttpSession httpSession = (HttpSession) request.getHttpSession();
+    //         config.getUserProperties().put(HttpSession.class.getName(), httpSession);
+    //     }
+    // }
 
     @OnMessage
-    public void onMessage(String message, Session session) throws IOException {
-        User user = UserManager.getUser(session);
+    public void onMessage(String message) throws IOException {
+        // User user = UserManager.getUser(sessionId);
         if (user != null) {
             String username = user.getUsername();
             // メッセージをすべてのセッションにブロードキャスト
@@ -44,17 +50,26 @@ public class WebSocketEndpoint {
                     }
                 }
             }
+        } else {
+            System.err.println("user is none");
+            session.getBasicRemote().sendText("user is none in this session");
         }
     }
 
+    // , EndpointConfig config
     @OnOpen
-    public void onOpen(Session session, EndpointConfig config) {
-        HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        httpSessionMap.put(session, httpSession);
-        // クライアントが接続したときにログに追加
-        User user = (User) httpSession.getAttribute("user");
+    public void onOpen(Session session, @PathParam("sessionId") String sessionId) {
+        this.session = session;
+        this.sessionId = sessionId;
+        this.user = UserManager.getUser(sessionId);
+
+        System.out.println(user);
+        // HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+        // httpSessionMap.put(session, httpSession);
+        // // クライアントが接続したときにログに追加
+        // User user = (User) httpSession.getAttribute("user");
         if (user != null) {
-            UserManager.addUser(session, user);
+            // UserManager.addUser(sessionId, user);
             for (Session s : session.getOpenSessions()) {
                 try {
                     s.getBasicRemote().sendText(user.getUsername() + " joined this room");
@@ -66,9 +81,9 @@ public class WebSocketEndpoint {
     }
 
     @OnClose
-    public void onClose(Session session) {
+    public void onClose() {
         // クライアントが切断されたときにログに追加
-        User user = UserManager.getUser(session);
+        // User user = UserManager.getUser(sessionId);
         if (user != null) {
             String username = user.getUsername();
             // メッセージをすべてのセッションにブロードキャスト
@@ -82,13 +97,13 @@ public class WebSocketEndpoint {
                 }
             }
         }
-        UserManager.removeUser(session);
+        UserManager.removeUser(sessionId);
     }
 
     @OnError
-    public void onError(Session session, Throwable throwable) {
-        httpSessionMap.remove(session);
-        UserManager.removeUser(session);
+    public void onError(Throwable throwable) {
+        // httpSessionMap.remove(session);
+        UserManager.removeUser(sessionId);
         throwable.printStackTrace();
     }
 }

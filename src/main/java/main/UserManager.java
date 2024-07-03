@@ -2,20 +2,19 @@ package main;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.websocket.Session;
 
 public class UserManager {
-  private static Map<Session, User> userMap = new ConcurrentHashMap<>();
+  private static Map<String, User> userMap = new ConcurrentHashMap<>();
 
-  public static void addUser(Session session, User user) {
-      userMap.put(session, user);
+  public static void addUser(String sessionId, User user) {
+      userMap.put(sessionId, user);
   }
 
-  public static void removeUser(Session session) {
-      userMap.remove(session);
+  public static void removeUser(String sessionId) {
+      userMap.remove(sessionId);
   }
 
-  public static User getUser(Session session) {
-      return userMap.get(session);
+  public static User getUser(String sessionId) {
+      return userMap.get(sessionId);
   }
 }
