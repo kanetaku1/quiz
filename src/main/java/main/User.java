@@ -11,8 +11,6 @@ public class User {
     this.score = 0;
   }
 
-  // ゲッターとセッターなど、必要なメソッドを追加する
-
   public String getUsername() {
     return username;
   }
