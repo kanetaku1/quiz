@@ -11,8 +11,7 @@
 </head>
 <body>
     <% 
-        User user = (User) session.getAttribute("user"); 
-        user.setUserType(User.UserType.GUEST);
+        User user = (User) session.getAttribute("user");
     %>
     <label>
         <h4> ユーザ名 :  
@@ -20,8 +19,7 @@
                 out.println(user.getUsername());
             } else{
                 out.println("no name");
-            }
-            %>
+            }%>
         </h4>
     </label>
 

@@ -7,7 +7,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,13 +24,12 @@ public class HostServlet extends HttpServlet{
     // 取得したデータをリクエスト属性に設定
     request.setAttribute("genreList", genreList);
 
-    HttpSession session = request.getSession();
-    User user = (User) session.getAttribute("user");
+    User user = (User) request.getSession().getAttribute("user");
     user.setUserType(User.UserType.HOST);
 
-    String view = "WEB-INF/host.jsp"; 
+    String view = "WEB-INF/quiz.jsp"; 
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);
-    System.out.println(user.getUsername() + " move to host.jsp");
+    System.out.println(user.getUsername() + ": " + user.getUserType() + " move to quiz.jsp");
     dispatcher.forward(request, response); 
   }
 }

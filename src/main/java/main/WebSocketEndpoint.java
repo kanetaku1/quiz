@@ -1,105 +1,141 @@
 package main;
 
 import java.io.IOException;
-
-import javax.servlet.http.HttpSession;
 import javax.websocket.*;
-import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.ServerEndpointConfig;
 
+import org.json.JSONObject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// , configurator = WebSocketEndpoint.Configurator.class
 @ServerEndpoint("/websocket/{sessionId}")
 public class WebSocketEndpoint {
     private Session session;
     private String sessionId;
     private User user;
-
-    // private static Map<Session, HttpSession> httpSessionMap = new ConcurrentHashMap<>();
-
-    // private static Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
-
-    // public static class Configurator extends ServerEndpointConfig.Configurator {
-    //     @Override
-    //     public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
-    //         HttpSession httpSession = (HttpSession) request.getHttpSession();
-    //         config.getUserProperties().put(HttpSession.class.getName(), httpSession);
-    //     }
-    // }
-
-    @OnMessage
-    public void onMessage(String message) throws IOException {
-        // User user = UserManager.getUser(sessionId);
-        if (user != null) {
-            String username = user.getUsername();
-            // メッセージをすべてのセッションにブロードキャスト
-            for (Session s : session.getOpenSessions()) {
-                if (s.isOpen()) {
-                    try {
-                        if(message.equals("host: push startButton")){
-                            s.getBasicRemote().sendText(message);
-                        } else{
-                            s.getBasicRemote().sendText(username + ": " + message);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
-    // , EndpointConfig config
+    private static QuizManager quizManager = new QuizManager();
+    private static Map<String, Session> sessions = new ConcurrentHashMap<>();
+    
     @OnOpen
     public void onOpen(Session session, @PathParam("sessionId") String sessionId) {
         this.session = session;
         this.sessionId = sessionId;
         this.user = UserManager.getUser(sessionId);
-
+        sessions.put(sessionId, session);
         System.out.println(user);
-        // HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        // httpSessionMap.put(session, httpSession);
-        // // クライアントが接続したときにログに追加
-        // User user = (User) httpSession.getAttribute("user");
+       
         if (user != null) {
-            // UserManager.addUser(sessionId, user);
-            for (Session s : session.getOpenSessions()) {
-                try {
-                    s.getBasicRemote().sendText(user.getUsername() + " joined this room");
-                } catch (IOException e) {
-                    e.printStackTrace();
+            quizManager.addUser(user);
+            sendMessage(session, createJsonMessage("chat", "Successfully connected to the quiz game."));
+        } else {
+            sendMessage(session, createJsonMessage("caht", "User not found."));
+            try{
+                session.close();
+            } catch (IOException e){
+                e.printStackTrace();
+            } 
+        }
+     
+    }
+
+    @OnMessage
+    public void onMessage(String message, Session session) throws IOException {
+        JSONObject jsonMessage = new JSONObject(message);
+        String action = jsonMessage.getString("action");
+        switch (action) {
+            case "chat":
+                broadcastChatMessage(jsonMessage);
+                break;
+            case "submitAnswer":
+                submitAnswer(jsonMessage);
+                break;
+            case "startGame":
+                if(user.getUserType() == User.UserType.HOST) {
+                    startGame(jsonMessage);
                 }
-            }
         }
     }
 
     @OnClose
-    public void onClose() {
-        // クライアントが切断されたときにログに追加
-        // User user = UserManager.getUser(sessionId);
+    public void onClose(Session session) {
+        sessions.remove(sessionId);
         if (user != null) {
-            String username = user.getUsername();
-            // メッセージをすべてのセッションにブロードキャスト
-            for (Session s : session.getOpenSessions()) {
-                if (s.isOpen()) {
-                    try {
-                        s.getBasicRemote().sendText(username + ": " + "left this room");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            quizManager.removeUser(user.getUsername());
         }
     }
 
     @OnError
-    public void onError(Throwable throwable) {
-        // httpSessionMap.remove(session);
+    public void onError(Session session, Throwable throwable) {
+        sessions.remove(sessionId);
         UserManager.removeUser(sessionId);
         throwable.printStackTrace();
+    }
+
+    private void startGame(JSONObject message) {
+        String genre = message.getString("genre");
+        quizManager.prepareQuiz(genre);
+        broadcastMessage(createJsonMessage("gameStarted", genre));
+        sendNextQuestion();
+    }
+
+    private void submitAnswer(JSONObject message) {
+        String answer = message.getString("answer");
+        boolean isCorrect = quizManager.checkAnswer(user, answer);
+        sendMessage(session, createJsonMessage("answerResult", isCorrect ? "Correct!" : "Incorrect!"));
+        if (quizManager.allAnswered()) {
+            if (quizManager.hasMoreQuestions()) {
+                sendNextQuestion();
+            } else {
+                endGame();
+            }
+        }
+    }
+
+    private void sendNextQuestion() {
+        String nextQuiz = quizManager.getNextQuestion();
+        broadcastMessage(new JSONObject(nextQuiz)
+            .put("type", "quiz")
+            .toString());
+    }
+
+    private void endGame() {
+        Map<User, Integer> scores = quizManager.getFinalScores();
+        JSONObject scoreBuilder = new JSONObject();
+        for (Map.Entry<User, Integer> entry : scores.entrySet()) {
+            User user = entry.getKey();
+            Integer score = entry.getValue();
+            scoreBuilder.put(user.getUsername(), score);
+        }
+        broadcastMessage(new JSONObject()
+            .put("type", "gameEnd")
+            .put("scores", scoreBuilder)
+            .toString());
+    }
+
+    private void broadcastChatMessage(JSONObject message) {
+        String chatMessage = message.getString("message");
+        broadcastMessage(createJsonMessage("chat", user.getUsername() + ": " + chatMessage));
+    }
+
+    private void broadcastMessage(String message) {
+        for (Session session : sessions.values()) {
+            sendMessage(session, message);
+        }
+    }
+
+    private void sendMessage(Session session, String message){
+        try{
+            session.getBasicRemote().sendText(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String createJsonMessage(String type, String content){
+        return new JSONObject()
+            .put("type", type)
+            .put("content", content)
+            .toString();
     }
 }
