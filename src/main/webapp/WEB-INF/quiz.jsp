@@ -81,7 +81,8 @@
       } else if (data.type === "game") {
         gameLog.innerHTML += "<p>" + data.content + "</p>";
       } else if (data.type === "quiz") {
-        quiz.textContent = data.question;
+        //quiz.textContent = data.question;
+        displayCharbychar(data.question);
         image.src = data.imagePath;
       } else if (data.type == "gameStarted"){
         genre.textContent = data.content;
@@ -109,6 +110,15 @@
       };
       webSocket.send(JSON.stringify(message)); 
     });
+
+    //一文字ずつ表示
+    function displayCharbychar(problemStatement){
+      for(let i=0;i<problemStatement.length;i++){
+        setTimeout(function() {
+          quiz.textContent += problemStatement[i];
+        }, i*200);//200ms間隔
+      }
+    }
   </script>
 </body>
 </html>
