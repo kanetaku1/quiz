@@ -47,7 +47,6 @@
 
       // リンク先のURLを構築
       var url = "searchMode?genre=" + encodeURIComponent(selectedGenre);
-      
       // リンク先に遷移
       window.location.href = url;
     }

@@ -14,7 +14,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/host.css">
+  <link rel="stylesheet" href="css/quiz.css">
   <title>クイズゲーム</title> 
 </head>
 <body>
@@ -88,7 +88,9 @@
         document.getElementById("waitingRoom").style.display = "none";
         document.getElementById("gameScreen").style.display = "block";
       } else if (data.type == "gameEnd"){
-
+        // リンク先のURLを構築
+        var url = "ForwardToResult" + encodeURIComponent(selectedGenre);
+        window.location.href = url;
       }
     };
 
