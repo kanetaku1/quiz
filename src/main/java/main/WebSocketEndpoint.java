@@ -29,7 +29,7 @@ public class WebSocketEndpoint {
             quizManager.addUser(user);
             sendMessage(session, createJsonMessage("chat", "Successfully connected to the quiz game."));
         } else {
-            sendMessage(session, createJsonMessage("caht", "User not found."));
+            sendMessage(session, createJsonMessage("chat", "User not found."));
             try{
                 session.close();
             } catch (IOException e){
@@ -107,6 +107,7 @@ public class WebSocketEndpoint {
             Integer score = entry.getValue();
             scoreBuilder.put(user.getUsername(), score);
         }
+        sendMessage(session, createJsonMessage("chat", "Game Ended"));
         broadcastMessage(new JSONObject()
             .put("type", "gameEnd")
             .put("scores", scoreBuilder)
