@@ -82,7 +82,7 @@ public class WebSocketEndpoint {
     private void submitAnswer(JSONObject message) {
         String answer = message.getString("answer");
         boolean isCorrect = quizManager.checkAnswer(user, answer);
-        sendMessage(session, createJsonMessage("answerResult", isCorrect ? "Correct!" : "Incorrect!"));
+        sendMessage(session, createJsonMessage("ServerMessage", isCorrect ? "Correct!" : "Incorrect!"));
         if (quizManager.allAnswered()) {
             if (quizManager.hasMoreQuestions()) {
                 sendNextQuestion();
@@ -107,7 +107,6 @@ public class WebSocketEndpoint {
             Integer score = entry.getValue();
             scoreBuilder.put(user.getUsername(), score);
         }
-        sendMessage(session, createJsonMessage("chat", "Game Ended"));
         broadcastMessage(new JSONObject()
             .put("type", "gameEnd")
             .put("scores", scoreBuilder)
