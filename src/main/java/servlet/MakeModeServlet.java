@@ -30,7 +30,7 @@ public class MakeModeServlet extends HttpServlet{
 
     // 画像のアップロード処理
     String imagePath = "";
-    if (filePart != null) {
+    if (filePart.getSize() != 0l) {
       String fileName = filePart.getSubmittedFileName();
       String uploadsDir = getServletContext().getRealPath("/uploads");
       File uploadsDirFile = new File(uploadsDir);
