@@ -42,9 +42,13 @@
     <h1>ジャンル</h1>
     <p id="genre"></p>
     <h1>問題</h1>
-    <p id="quiz">第0問</p>
+    <p id="quiz"></p>
     <h1>写真パス</h1>
     <img id="image" src="#">
+    <form id="sendForm">
+      <input type="text" id="inputText" name="inputText">
+      <input type="submit" id="submitButton" value="submit">
+    </form>
     <div id="gameLog"></div>
   </div>
 
@@ -82,6 +86,7 @@
         gameLog.innerHTML += "<p>" + data.content + "</p>";
       } else if (data.type === "quiz") {
         //quiz.textContent = data.question;
+        quiz.textContent = "";
         displayCharbychar(data.question);
         image.src = data.imagePath;
       } else if (data.type == "gameStarted"){
@@ -116,9 +121,22 @@
       for(let i=0;i<problemStatement.length;i++){
         setTimeout(function() {
           quiz.textContent += problemStatement[i];
-        }, i*200);//200ms間隔
+        }, i*200);
       }
     }
+
+    document.getElementById("sendForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // デフォルトのサブミット動作をキャンセル
+
+      var inputText = document.getElementById("inputText").value;
+      document.getElementById("inputText").value = "";
+
+      var message = {
+        action: "submitAnswer",
+        answer: inputText
+      };
+      webSocket.send(JSON.stringify(message));
+  });
   </script>
 </body>
 </html>
