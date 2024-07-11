@@ -9,7 +9,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import main.GetQuiz;
 
@@ -27,13 +26,8 @@ public class SearchModeServlet extends HttpServlet {
     getQuiz.quizList.showData();
 
     // ジャンルリストを取得&セット
-    HttpSession session = request.getSession();
-    List<String> genreList = (List<String>) session.getAttribute("genres");
+    List<String> genreList = (List<String>) request.getSession().getAttribute("genres");
     request.setAttribute("genreList", genreList);
-
-    // System.out.println("Image Path: " + getQuiz.imagePaths);
-    // System.out.println("Question: " + getQuiz.questions);
-    // System.out.println("Answer: " + getQuiz.answers);
 
     request.setAttribute("imagePath", getQuiz.quizList.getImagePaths());
     request.setAttribute("question", getQuiz.quizList.getQuestions());

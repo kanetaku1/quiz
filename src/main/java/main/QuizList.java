@@ -7,19 +7,11 @@ public class QuizList {
   private List<String> imagePaths;
   private List<String> questions;
   private List<String> answers;
-  private List<String> genres;
 
-  // public QuizList(List<String> imagePaths, List<String> questions, List<String> answers, List<String> genres){
-  //   this.imagePaths = imagePaths;
-  //   this.questions = questions;
-  //   this.answers = answers;
-  //   this.genres = genres;
-  // }
   public QuizList(){
     this.imagePaths = new ArrayList<>();
     this.questions = new ArrayList<>();
     this.answers = new ArrayList<>(); 
-    this.genres = new ArrayList<>();
   }
 
   public void setQuizData(String ImagePath, String Question, String Answer){

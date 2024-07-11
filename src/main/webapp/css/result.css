@@ -1,0 +1,40 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color: #333;
+}
+
+table {
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 15px 100px;
+  border: 1px solid #3b60ab;
+}
+
+th {
+  background-color: #b6d0e9;
+}
+
+body {
+  background-color: #ccdde9;
+}
+
+.button-container {
+  position: absolute;
+  top: 1cm;
+  /* ボタンの位置を調整 */
+  left: 80%;
+  transform: translateX(-50%);
+}
+
+#transition-button {
+  padding: 10px 20px;
+  font-size: 16px;
+}

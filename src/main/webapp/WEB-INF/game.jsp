@@ -58,7 +58,7 @@
     webSocket.onmessage = function(event) {
       console.log("Received message from server: " + event.data);
       if(event.data.startsWith("問題:") || event.data.startsWith("不正解")){
-        quiz.textContent = event.data.slice(3);
+        //quiz.textContent = event.data.slice(3);
       } else if(event.data.startsWith("写真:")){
         image.src = event.data.slice(3);
       } else {

@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/forwardToQuiz")
 public class ForwardQuizServlet extends HttpServlet {
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // 次のページにフォワード
+        /// 次のページにフォワード
         String view = "WEB-INF/roomSelection.jsp"; // JSP を相対パスで指定
         RequestDispatcher dispatcher = request.getRequestDispatcher(view);
         System.out.println("move to roomSelection.jsp");
