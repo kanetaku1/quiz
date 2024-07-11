@@ -45,6 +45,8 @@
     <p id="quiz">第0問</p>
     <h1>写真パス</h1>
     <img id="image" src="#">
+    <input type="text" id="inputText" name="inputText">
+    <input type="submit" id="submitButton" value="submit">
     <div id="gameLog"></div>
   </div>
 
@@ -119,6 +121,17 @@
         }, i*200);//200ms間隔
       }
     }
+
+    document.getElementById("submitButton").addEventListener("click", function() {
+      var inputText = document.getElementById("inputText").value;
+      document.getElementById("inputText").value = ""; 
+
+      var message = {
+        action: "submitAnswer",
+        Answer: inputText
+      };
+      webSocket.send(JSON.stringify(message));
+    });
   </script>
 </body>
 </html>
