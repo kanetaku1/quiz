@@ -10,7 +10,7 @@
 %>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,7 +47,25 @@
     <img id="image" src="#">
     <input type="text" id="inputText" name="inputText">
     <input type="submit" id="submitButton" value="submit">
-    <div id="gameLog"></div>
+    <div id="gameLog">ゲームログ</div>
+  </div>
+
+  <div id="scoreBoard" style="display: none;">
+    <div class="button-container">
+      <button id="transition-button">ホームに戻る</button>
+    </div>
+    <h1>🌷結果発表🌷</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>プレイヤー名</th>
+          <th>獲得ポイント</th>
+        </tr>
+      </thead>
+      <tbody id="result-table">
+        <!-- 結果をここに動的に追加する -->
+      </tbody>
+    </table>
   </div>
 
   <script>
@@ -78,11 +96,9 @@
 
     webSocket.onmessage = function(event) {
       var data = JSON.parse(event.data);
-      if (data.type === "chat") {
+      if (data.type == "chat") {
         log.innerHTML += "<p>" + data.content + "</p>";
-      } else if (data.type === "game") {
-        gameLog.innerHTML += "<p>" + data.content + "</p>";
-      } else if (data.type === "quiz") {
+      } else if (data.type == "quiz") {
         //quiz.textContent = data.question;
         displayCharbychar(data.question);
         image.src = data.imagePath;
@@ -90,10 +106,15 @@
         genre.textContent = data.content;
         document.getElementById("waitingRoom").style.display = "none";
         document.getElementById("gameScreen").style.display = "block";
+      } else if (data.type == "ServerMessage"){
+        gameLog.innerHTML += "<p>" + data.content + "</p>";
       } else if (data.type == "gameEnd"){
-        // リンク先のURLを構築
-        var url = "ForwardToResult" + encodeURIComponent(selectedGenre);
-        window.location.href = url;
+        // // リンク先のURLを構築
+        // var url = "ForwardToResult" + encodeURIComponent(selectedGenre);
+        // window.location.href = url;
+        makeScores(data.scores);
+        document.getElementById("gameScreen").style.display = "none";
+        document.getElementById("scoreBoard").style.display = "block";
       }
     };
 
@@ -124,13 +145,38 @@
       }
     }
 
+    //結果を表示
+    function makeScores(scores){
+      console.log(scores);
+      // スコアデータを配列に変換し、得点でソート
+      const scoresArray = Object.entries(scores).map(([username, score]) => ({ username, score }));
+      scoresArray.sort((a, b) => b.score - a.score);
+      // スコアボードにデータを表示
+      const resultTable = document.getElementById('result-table');
+      scoresArray.forEach(({ username, score }) => {
+        const row = document.createElement('tr');
+        const usernameCell = document.createElement('td');
+        const scoreCell = document.createElement('td');
+        usernameCell.textContent = username;
+        scoreCell.textContent = score;
+        row.appendChild(usernameCell);
+        row.appendChild(scoreCell);
+        resultTable.appendChild(row);
+      });
+    }
+
+    // ホームに戻るボタンのイベントリスナーを追加
+    document.getElementById('transition-button').addEventListener('click', () => {
+        window.location.href = 'form'; // ホームページのURLに置き換えてください
+    });
+
     document.getElementById("submitButton").addEventListener("click", function() {
       var inputText = document.getElementById("inputText").value;
       document.getElementById("inputText").value = ""; 
 
       var message = {
         action: "submitAnswer",
-        Answer: inputText
+        answer: inputText
       };
       webSocket.send(JSON.stringify(message));
     });
