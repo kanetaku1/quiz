@@ -15,6 +15,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/quiz.css">
+  <link rel="stylesheet" href="css/result.css">
   <title>クイズゲーム</title> 
 </head>
 <body>
@@ -45,16 +46,14 @@
     <p id="quiz"></p>
     <h1>写真パス</h1>
     <img id="image" src="#">
-    <form id="sendForm">
-      <input type="text" id="inputText" name="inputText">
-      <input type="submit" id="submitButton" value="submit">
-    </form>
     <div id="gameLog">ゲームログ</div>
+    <input type="text" id="inputText" name="inputText">
+    <button onclick="sendAnswer()">Send</button>
   </div>
 
   <div id="scoreBoard" style="display: none;">
     <div class="button-container">
-      <button id="transition-button">ホームに戻る</button>
+      <button onclick="Home()">ホームに戻る</button>
     </div>
     <h1>🌷結果発表🌷</h1>
     <table>
@@ -110,28 +109,40 @@
         document.getElementById("waitingRoom").style.display = "none";
         document.getElementById("gameScreen").style.display = "block";
       } else if (data.type == "ServerMessage"){
-        gameLog.innerHTML += "<p>" + data.content + "</p>";
+        gameLog.innerHTML = "<p>" + data.content + "</p>";
       } else if (data.type == "gameEnd"){
-        // // リンク先のURLを構築
-        // var url = "ForwardToResult" + encodeURIComponent(selectedGenre);
-        // window.location.href = url;
         makeScores(data.scores);
         document.getElementById("gameScreen").style.display = "none";
         document.getElementById("scoreBoard").style.display = "block";
       }
     };
 
+    /// チャットのメッセージをサーバーへ送信
     function sendMessage() {
       var messageInput = document.getElementById("message");
       var message = messageInput.value;
-      webSocket.send(JSON.stringify({action: "chat", message: message}));
+      webSocket.send(JSON.stringify({
+        action: "chat", 
+        message: message
+      }));
       messageInput.value = "";
     }
 
+    /// 入力された回答をサーバーへ送信
+    function sendAnswer() {
+      var answerInput = document.getElementById("inputText");
+      var Answer = answerInput.value;
+      webSocket.send(JSON.stringify({
+        action: "submitAnswer", 
+        answer: Answer
+      }));
+      answerInput.value = "";
+    }
+
+    /// 選択されたジャンルを送信＆ゲームスタート
     document.getElementById("select").addEventListener("click", function() {
       var dropdown = document.getElementById("dropdown");
       var selectedGenre = dropdown.value;
-
       var message = {
         action: "startGame",
         genre: selectedGenre
@@ -168,23 +179,9 @@
       });
     }
 
-    // ホームに戻るボタンのイベントリスナーを追加
-    document.getElementById('transition-button').addEventListener('click', () => {
-        window.location.href = 'form'; // ホームページのURLに置き換えてください
-    });
-
-    document.getElementById("sendForm").addEventListener("submit", function(event) {
-      event.preventDefault(); // デフォルトのサブミット動作をキャンセル
-
-      var inputText = document.getElementById("inputText").value;
-      document.getElementById("inputText").value = "";
-
-      var message = {
-        action: "submitAnswer",
-        answer: inputText
-      };
-      webSocket.send(JSON.stringify(message));
-  });
+    function Home() {
+      window.location.href = 'form';
+    }
   </script>
 </body>
 </html>
