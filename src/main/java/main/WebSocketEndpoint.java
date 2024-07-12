@@ -23,7 +23,6 @@ public class WebSocketEndpoint {
         this.sessionId = sessionId;
         this.user = UserManager.getUser(sessionId);
         sessions.put(sessionId, session);
-        System.out.println(user);
        
         if (user != null) {
             quizManager.addUser(user);

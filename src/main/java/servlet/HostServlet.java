@@ -20,7 +20,6 @@ public class HostServlet extends HttpServlet{
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // APIからデータを取得
     List<String> genreList = getGenre.getDataFromAPI();
-    System.out.println("genreList: " + genreList);
     // 取得したデータをリクエスト属性に設定
     request.setAttribute("genreList", genreList);
 
