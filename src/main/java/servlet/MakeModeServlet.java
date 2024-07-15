@@ -23,9 +23,12 @@ public class MakeModeServlet extends HttpServlet{
     request.setCharacterEncoding("utf-8");
     // リクエストから画像、問題、ジャンル、回答を取得
     Part filePart = request.getPart("imageFile");
-    String genre = request.getParameter("genre");
     String question = request.getParameter("question");
     String answer = request.getParameter("answer");
+    String genre = request.getParameter("genre");
+    if (genre.equals("new")) {
+      genre = request.getParameter("newGenre");
+    }
 
     // 画像のアップロード処理
     String imagePath = "";
