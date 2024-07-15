@@ -27,20 +27,21 @@
         %>
         <option value="new">新しいジャンルを追加</option>
       </select>
-      <textarea name="newGenre" id="newGenreInput" cols="100" rows="1" style="display:none;" placeholder="新しいジャンルを入力"></textarea>
+      <input type="text" name="newGenre" id="newGenreInput" cols="100" rows="1" style="display:none;" placeholder="新しいジャンルを入力">
     
     <h2 >問題<br>
       <textarea name="question" id="questionInput" cols="100" rows="5" oninput="checkFields()"></textarea>
     </h2>
     <h2>解答<br>
-      <textarea name="answer" id="answerInput" cols="100" rows="1" oninput="validateInput(this); checkFields()" ></textarea>
+      <input type="text" name="answer" id="answerInput" cols="100" rows="1" oninput="validateInput(this); checkFields()" >
     </h2>
     <p id="errorMessage">ひらがな、カタカナ、アルファベット、数字、長音符のみ入力してください。</p>
-    <input type="file" name="imageFile" id="image"><br>
+    <input type="file" name="imageFile" id="image" accept="image/*, .png, .jpg, .jpeg"><br>
     <div id="upload"></div>
     <input type="submit" value="Submit">
     <p id="formError">すべてのフィールドを入力してください。</p>
   </form>
+
   <script>
     function previewFile(file) {
       // プレビュー画像を追加する要素
@@ -51,12 +52,11 @@
       const reader = new FileReader();
       // ファイルが読み込まれたときに実行する
       reader.onload = function (e) {
-        const img = document.createElement("img"); // img要素を作成
-        img.src = e.target.result; // 画像のURLをimg要素にセット
+        const img = document.createElement("img");
+        img.src = e.target.result;
         img.style.maxWidth = "100%"
-        preview.appendChild(img); // #previewの中に追加
+        preview.appendChild(img);
       }
-      // いざファイルを読み込む
       reader.readAsDataURL(file);
     }
     // <input>でファイルが選択されたときの処理
@@ -71,17 +71,17 @@
     
     var genreSelect = document.getElementById("genreSelect");
     var formError = document.getElementById("formError");
+    var errorMessage = document.getElementById("errorMessage");
 
     function validateInput(input) {
       var validRegex = /^[\u3040-\u309F\u30A0-\u30FFa-zA-Z0-9ー]*$/;
-      var errorMessage = document.getElementById("errorMessage");
       
       if (validRegex.test(input.value)) {
         errorMessage.style.display = "none";
       } else {
         errorMessage.style.display = "block";
         // 入力欄から不正な文字を削除
-        input.value = input.value.replace(/^[\u3040-\u309F\u30A0-\u30FFa-zA-Z0-9ー]/g, '');
+        // input.value = input.value.replace(/^[\u3040-\u309F\u30A0-\u30FFa-zA-Z0-9ー]/g, '');
       }
     }
 
@@ -90,7 +90,7 @@
       var newGenre = document.getElementById("newGenreInput").value.trim();
       var question = document.getElementById("questionInput").value.trim();
       var answer = document.getElementById("answerInput").value.trim();
-      if ((genre === "" || genre === "new" && newGenre === "") || question === "" || answer === "") {
+      if ((genre === "" || genre === "new" && newGenre === "") || question === "" || answer === "" || errorMessage.style.display == "block") {
         formError.style.display = "block";
         return false;
       } else {

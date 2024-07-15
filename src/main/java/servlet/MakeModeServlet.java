@@ -1,8 +1,8 @@
 package servlet;
 
+import main.SendQuiz;
 import java.io.File;
 import java.io.IOException;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -12,14 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import main.SendQuiz;
-
 @WebServlet("/makeMode")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 10 )
 public class MakeModeServlet extends HttpServlet{
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     SendQuiz sendQuiz = new SendQuiz();
-
     request.setCharacterEncoding("utf-8");
     // リクエストから画像、問題、ジャンル、回答を取得
     Part filePart = request.getPart("imageFile");
@@ -29,7 +26,6 @@ public class MakeModeServlet extends HttpServlet{
     if (genre.equals("new")) {
       genre = request.getParameter("newGenre");
     }
-
     // 画像のアップロード処理
     String imagePath = "";
     if (filePart.getSize() != 0l) {
@@ -43,14 +39,13 @@ public class MakeModeServlet extends HttpServlet{
       filePart.write(filePath);
       imagePath = "uploads/" + fileName;
     }
-
     System.out.println("imagePath: " + imagePath);
     System.out.println("genre: " + genre);
     System.out.println("question: " + question);
     System.out.println("answer: " + answer);
-
+    // 作成されたクイズをデータベースへ送信する
     sendQuiz.SendData(imagePath, genre, question, answer);
-
+    /// 次のページにフォワード
     String view = "WEB-INF/home.jsp"; 
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);
     System.out.println("move to home.jsp");
