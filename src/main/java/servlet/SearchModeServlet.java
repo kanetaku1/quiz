@@ -11,28 +11,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import main.GetQuiz;
+import main.QuizList;
 
 @WebServlet("/searchMode")
-public class SearchModeServlet extends HttpServlet {
-
-  GetQuiz getQuiz = new GetQuiz();
-  
+public class SearchModeServlet extends HttpServlet {  
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // ジャンルを取得
-    String genre = request.getParameter("genre");
+    String selectedGenre = request.getParameter("selectedGenre");
 
-    // ここでジャンルを使って何かを行う
-    getQuiz.getQuizData(genre);
-    getQuiz.quizList.showData();
-
-    // ジャンルリストを取得&セット
-    List<String> genreList = (List<String>) request.getSession().getAttribute("genres");
-    request.setAttribute("genreList", genreList);
-
-    request.setAttribute("imagePath", getQuiz.quizList.getImagePaths());
-    request.setAttribute("question", getQuiz.quizList.getQuestions());
-    request.setAttribute("answer", getQuiz.quizList.getAnswers());
-    request.setAttribute("selectedGenre", genre);
+    if (selectedGenre != ""){
+      GetQuiz getQuiz = new GetQuiz();
+      getQuiz.getQuizData(selectedGenre);
+      // getQuiz.quizList.showData();
+      QuizList quizList = getQuiz.quizList;
+      request.setAttribute("quizList", quizList);
+      request.setAttribute("selectedGenre", selectedGenre);
+    }
 
     String view = "WEB-INF/search.jsp";
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);
