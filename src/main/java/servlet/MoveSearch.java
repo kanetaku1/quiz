@@ -14,21 +14,17 @@ import javax.servlet.http.HttpSession;
 import main.GetGenre;
 
 @WebServlet("/forwardToSearch")
-public class ForwardSearchServlet extends HttpServlet{
-
-  GetGenre getGenre = new GetGenre();
-
+public class MoveSearch extends HttpServlet{
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    GetGenre getGenre = new GetGenre();
     // APIからデータを取得
     List<String> genreList = getGenre.getDataFromAPI();
     System.out.println("genreList: " + genreList);
-    // 取得したデータをリクエスト属性に設定
-    request.setAttribute("genreList", genreList);
 
     // SearchModeServletへジャンルリストを引き継ぐ
     HttpSession session = request.getSession();
-    session.setAttribute("genres", genreList);
+    session.setAttribute("genreList", genreList);
 
     String view = "WEB-INF/search.jsp"; 
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);

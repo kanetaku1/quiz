@@ -14,7 +14,7 @@ import main.User;
 import main.UserManager;
 
 @WebServlet("/userResist")
-public class UserResist extends HttpServlet{
+public class UserResistServlet extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,9 +31,9 @@ public class UserResist extends HttpServlet{
 		String sessionId = session.getId();
 		UserManager.addUser(sessionId, user);
 
-		String view = "WEB-INF/form.jsp"; // JSP を相対パスで指定
+		String view = "WEB-INF/home.jsp"; // JSP を相対パスで指定
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);
-    System.out.println("move to form.jsp");
+    System.out.println("move to home.jsp");
     dispatcher.forward(request, response);
 	}
 }

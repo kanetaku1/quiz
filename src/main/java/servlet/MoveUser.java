@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/forwardToUser")
-public class ForwardUserServlet extends HttpServlet{
+public class MoveUser extends HttpServlet{
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 次のページにフォワード
 		String view = "WEB-INF/user.jsp"; // JSP を相対パスで指定

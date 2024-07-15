@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/forwardToMake")
-public class ForwardMakeServlet extends HttpServlet{
+public class MoveMake extends HttpServlet{
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String view = "WEB-INF/make.jsp"; 

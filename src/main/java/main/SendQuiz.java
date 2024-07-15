@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 
 public class SendQuiz {
 
-  public void SendData(String file_path, String genre, String question, String answer){
+  public void SendData(String imagePath, String genre, String question, String answer){
 
     try {
       URL url = new URL("http://localhost/minhaya/quiz_post.php");
@@ -16,21 +16,21 @@ public class SendQuiz {
       connection.setDoOutput(true);
 
       // 送信するデータを作成
-      String postData = "file_path=" + file_path + "&genre=" + genre + "&question=" + question + "&answer=" + answer;
+      String postData = "imagePath=" + imagePath + "&genre=" + genre + "&question=" + question + "&answer=" + answer;
       byte[] postDataBytes = postData.getBytes(StandardCharsets.UTF_8);
 
       // データを送信
       try (OutputStream os = connection.getOutputStream()) {
-          os.write(postDataBytes);
-      }
-      // レスポンスを取得
-      int responseCode = connection.getResponseCode();
-      if (responseCode == HttpURLConnection.HTTP_OK) {
+        os.write(postDataBytes);
+          // レスポンスを取得
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
           System.out.println("Data sent successfully.");
-      } else {
+        } else {
           System.out.println("Failed to send data. Response code: " + responseCode);
+        }   
       }
-        connection.disconnect();
+      connection.disconnect();
     } catch (Exception e) {
         e.printStackTrace();
     }

@@ -9,13 +9,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/form")
-public class ForwardFormServlet extends HttpServlet{
+@WebServlet("/home")
+public class MoveForm extends HttpServlet{
   
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String view = "WEB-INF/form.jsp"; 
+    String view = "WEB-INF/home.jsp"; 
     RequestDispatcher dispatcher = request.getRequestDispatcher(view);
-    System.out.println("move to form.jsp");
+    System.out.println("move to home.jsp");
     dispatcher.forward(request, response); 
   }
 }

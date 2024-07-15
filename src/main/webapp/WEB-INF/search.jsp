@@ -1,9 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.*" %> 
+<%@ page import="main.QuizList" %>
 
 <%
-  List<String> genreList = (List<String>) request.getAttribute("genreList");
-  List<String> questionList = (List<String>) request.getAttribute("question");
+  List<String> genreList = (List<String>) request.getSession().getAttribute("genreList");
+  QuizList quizList = (QuizList) request.getAttribute("quizList");
+  String selectedGenre = (String) request.getAttribute("selectedGenre");
 %>
 
 <!DOCTYPE html>
@@ -12,44 +14,83 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/search.css">
-  <title>Start View Mode</title>
+  <title>閲覧モード</title>
 </head>
 <body>
-  <h1>
-    問題ジャンル
-    <div class="select-box01">
-      <select id="subject" onchange="startSearch()" >
-        <option value="">ジャンルを選択してください</option>
-        <%if (genreList != null) {
-          for (String genre : genreList) { %>
-            <option value = "<%= genre %>"><%= genre %></option>
-          <% } 
-        } %>
-        <input type="hidden" name="genres" value="<%= genreList %>">
+  <div id="quiz-list">
+    <h1>問題ジャンル</h1>
+    <form action="searchMode" method="get">
+      <select name="selectedGenre">
+          <option value="">ジャンルを選択</option>
+          <% for (String genre : genreList) { %>
+              <option value="<%= genre %>" <%= genre.equals(selectedGenre) ? "selected" : "" %>>
+                <%= genre %>
+              </option>
+          <% } %>
       </select>
-    </div>
-  </h1>
-      
-  <div id="Quiz">
-    <h2><%= request.getAttribute("selectedGenre") %>の問題</h2>
-    <%if (questionList != null) {
-      for (String question : questionList) { %>
-        <p><a href = "editQuiz?question=<%= question %>"><%= question %></a></p>
-      <% } 
-    } %>
+      <input type="submit" value="問題を表示">
+    </form>
+    <% if (selectedGenre != null) { %>
+      <h2><%=  selectedGenre %>の問題</h2>
+      <% if (quizList != null) {
+        for (int i = 0; i < quizList.getQuestions().size(); i++) { %>
+          <div class="question">
+            <a href = "#" onclick="showQuestionDetail(<%=i%>)"><%= quizList.getQuestions().get(i) %></a>
+          </div>
+        <% } 
+      } 
+    }%>
   </div>
 
-  <script>
-    function startSearch(){
-      // 選択されたジャンルを取得
-      var subject = document.getElementById("subject");
-      var selectedGenre = subject.value;
+  <div id="quiz-detail" style="display:none;">
+    <h2>問題詳細</h2>
+    <img id="image" src="#" alt="問題画像">
+    <p><strong>問題:</strong></p>
+    <p id="question"></p>
+    <p><strong>答え:</strong></p>
+    <p id="answer"></p>
+    <button onclick="closeQuestionDetail()">閉じる</button>
+  </div>
 
-      // リンク先のURLを構築
-      var url = "searchMode?genre=" + encodeURIComponent(selectedGenre);
-      // リンク先に遷移
-      window.location.href = url;
+  <button onclick="Home()">ホームに戻る</button>
+  <script>
+    function Home() {
+      window.location.href = 'home';
     }
   </script>
+
+  <% if (selectedGenre != null) {
+    org.json.JSONObject quizData = new org.json.JSONObject();
+    quizData.put("questions", quizList.getQuestions());
+    quizData.put("answers", quizList.getAnswers());
+    quizData.put("imagePaths", quizList.getImagePaths());
+  %>
+  <script>
+    var quizData = <%= quizData.toString() %>;
+    var image = document.getElementById("image");
+    var question = document.getElementById("question");
+    var answer = document.getElementById("answer");
+    var quiz_List = document.getElementById("quiz-list");
+    var quiz_Detail = document.getElementById("quiz-detail");
+
+    function showQuestionDetail(index) {
+      quiz_List.style.display = "none";
+      quiz_Detail.style.display = "block";
+      question.textContent = quizData.questions[index];
+      answer.textContent = quizData.answers[index];
+      image.src = quizData.imagePaths[index];
+    }
+
+    function closeQuestionDetail() {
+      quiz_Detail.style.display = 'none';
+      quiz_List.style.display = 'block';
+    }
+
+    function Home() {
+      window.location.href = 'home';
+    }
+  </script>
+  <%
+  } %>
 </body>
 </html>

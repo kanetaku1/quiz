@@ -180,7 +180,7 @@
     }
 
     function Home() {
-      window.location.href = 'form';
+      window.location.href = 'home';
     }
   </script>
 </body>
