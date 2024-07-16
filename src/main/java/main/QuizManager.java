@@ -35,11 +35,13 @@ public class QuizManager {
     if (currentQuestionIndex < quizList.getQuestions().size()) {
       String question = quizList.getQuestions().get(currentQuestionIndex);
       String imagePath = quizList.getImagePaths().get(currentQuestionIndex);
+      String answer = quizList.getAnswers().get(currentQuestionIndex);
       currentQuestionIndex++;
       answered.clear(); // 新しい問題のため、回答状況をリセット
       JSONObject quizData = new JSONObject();
       quizData.put("question", question);
       quizData.put("imagePath", imagePath);
+      quizData.put("answer", answer);
       return quizData.toString();
     }
     return null;

@@ -84,7 +84,6 @@ public class WebSocketEndpoint {
         boolean isCorrect = quizManager.checkAnswer(user, answer);
         sendMessage(session, createJsonMessage("ServerMessage", isCorrect ? "Correct!" : "Incorrect!"));
         if (quizManager.allAnswered()) {
-            broadcastUserList();
             if (quizManager.hasMoreQuestions()) {
                 sendNextQuestion();
             } else {
