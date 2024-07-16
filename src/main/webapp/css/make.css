@@ -4,3 +4,22 @@
     top: 70%;
     transform: translateX(-50%) translateY(-50%);
   }
+h2 {
+  background:#eaffdf; 
+border: #82d35a 1px solid; 
+border-radius: 6px; 
+padding:10px
+}
+
+textarea{
+  font-size: 120%;
+}
+
+#errorMessage {
+  color: red;
+  display: none;
+}
+#formError {
+  color: red;
+  display: none;
+}

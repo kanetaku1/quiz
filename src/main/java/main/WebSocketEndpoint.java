@@ -4,7 +4,6 @@ import java.io.IOException;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-
 import org.json.JSONObject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,13 +22,12 @@ public class WebSocketEndpoint {
         this.sessionId = sessionId;
         this.user = UserManager.getUser(sessionId);
         sessions.put(sessionId, session);
-        System.out.println(user);
        
         if (user != null) {
             quizManager.addUser(user);
             sendMessage(session, createJsonMessage("chat", "Successfully connected to the quiz game."));
         } else {
-            sendMessage(session, createJsonMessage("caht", "User not found."));
+            sendMessage(session, createJsonMessage("chat", "User not found."));
             try{
                 session.close();
             } catch (IOException e){
@@ -82,7 +80,7 @@ public class WebSocketEndpoint {
     private void submitAnswer(JSONObject message) {
         String answer = message.getString("answer");
         boolean isCorrect = quizManager.checkAnswer(user, answer);
-        sendMessage(session, createJsonMessage("answerResult", isCorrect ? "Correct!" : "Incorrect!"));
+        sendMessage(session, createJsonMessage("ServerMessage", isCorrect ? "Correct!" : "Incorrect!"));
         if (quizManager.allAnswered()) {
             if (quizManager.hasMoreQuestions()) {
                 sendNextQuestion();
