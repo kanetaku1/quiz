@@ -6,3 +6,26 @@
 h1 {
   text-align: center;
 }
+
+#userList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.user {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+.username {
+    font-weight: bold;
+    margin-right: 10px;
+}
+.userType {
+    color: #666;
+    margin-right: 10px;
+}
+.score {
+    color: #007bff;
+}

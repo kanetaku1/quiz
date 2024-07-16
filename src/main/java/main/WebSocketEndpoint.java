@@ -25,6 +25,7 @@ public class WebSocketEndpoint {
        
         if (user != null) {
             quizManager.addUser(user);
+            broadcastUserList();
             sendMessage(session, createJsonMessage("chat", "Successfully connected to the quiz game."));
         } else {
             sendMessage(session, createJsonMessage("chat", "User not found."));
@@ -58,6 +59,7 @@ public class WebSocketEndpoint {
     @OnClose
     public void onClose(Session session) {
         sessions.remove(sessionId);
+        broadcastUserList();
         if (user != null) {
             quizManager.removeUser(user.getUsername());
         }
@@ -82,6 +84,7 @@ public class WebSocketEndpoint {
         boolean isCorrect = quizManager.checkAnswer(user, answer);
         sendMessage(session, createJsonMessage("ServerMessage", isCorrect ? "Correct!" : "Incorrect!"));
         if (quizManager.allAnswered()) {
+            broadcastUserList();
             if (quizManager.hasMoreQuestions()) {
                 sendNextQuestion();
             } else {
@@ -108,6 +111,14 @@ public class WebSocketEndpoint {
         broadcastMessage(new JSONObject()
             .put("type", "gameEnd")
             .put("scores", scoreBuilder)
+            .toString());
+    }
+
+    private void broadcastUserList() {
+        String userListJson = quizManager.getUserListJson();
+        broadcastMessage(new JSONObject()
+            .put("type", "userList")
+            .put("data", userListJson)
             .toString());
     }
 

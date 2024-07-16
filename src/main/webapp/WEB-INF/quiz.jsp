@@ -19,6 +19,9 @@
   <title>ゲームモード</title> 
 </head>
 <body>
+  <h1>ユーザーリスト</h1>
+  <div id="userList"></div>
+
   <div id="waitingRoom">
     <h1>ルーム作成</h1>
     <% if(user.getUserType() == User.UserType.HOST) { %>
@@ -97,20 +100,21 @@
 
     webSocket.onmessage = function(event) {
       var data = JSON.parse(event.data);
-      if (data.type == "chat") {
+      if (data.type === "chat") {
         log.innerHTML += "<p>" + data.content + "</p>";
-      } else if (data.type == "quiz") {
-        //quiz.textContent = data.question;
+      } else if (data.type === "userList") {
+        updateUserList(JSON.parse(data.data));
+      } else if (data.type === "quiz") {
         quiz.textContent = "";
         displayCharbychar(data.question);
         image.src = data.imagePath;
-      } else if (data.type == "gameStarted"){
+      } else if (data.type === "gameStarted"){
         genre.textContent = data.content;
         document.getElementById("waitingRoom").style.display = "none";
         document.getElementById("gameScreen").style.display = "block";
-      } else if (data.type == "ServerMessage"){
+      } else if (data.type === "ServerMessage"){
         gameLog.innerHTML = "<p>" + data.content + "</p>";
-      } else if (data.type == "gameEnd"){
+      } else if (data.type === "gameEnd"){
         makeScores(data.scores);
         document.getElementById("gameScreen").style.display = "none";
         document.getElementById("scoreBoard").style.display = "block";
@@ -126,6 +130,22 @@
         message: message
       }));
       messageInput.value = "";
+    }
+
+    /// ユーザ情報を共有
+    function updateUserList(userList) {
+      const userListElement = document.getElementById('userList');
+      userListElement.innerHTML = '';
+      userList.forEach(user => {
+        const userElement = document.createElement('div');
+        userElement.className = 'user';
+        userElement.innerHTML = `
+          <span class="username">${user.username}</span>
+          <span class="userType">${user.userType}</span>
+          <span class="score">${user.score}</span>
+        `;
+        userListElement.appendChild(userElement);
+      });
     }
 
     /// 入力された回答をサーバーへ送信
