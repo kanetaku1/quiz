@@ -84,10 +84,17 @@ public class WebSocketEndpoint {
         boolean isCorrect = quizManager.checkAnswer(user, answer);
         sendMessage(session, createJsonMessage("ServerMessage", isCorrect ? "Correct!" : "Incorrect!"));
         if (quizManager.allAnswered()) {
-            if (quizManager.hasMoreQuestions()) {
-                sendNextQuestion();
-            } else {
-                endGame();
+            try {
+                broadcastMessage(createJsonMessage("displayAnswer" , null));
+                broadcastUserList();
+                Thread.sleep(5000);//答えを表示する時間を確保
+                if (quizManager.hasMoreQuestions()) {
+                    sendNextQuestion();
+                } else {
+                    endGame();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
