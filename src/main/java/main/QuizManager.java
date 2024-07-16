@@ -2,7 +2,6 @@ package main;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.json.JSONObject;
 
 public class QuizManager {

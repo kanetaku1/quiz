@@ -10,13 +10,13 @@
 %>
 
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/quiz.css">
   <link rel="stylesheet" href="css/result.css">
-  <title>クイズゲーム</title> 
+  <title>ゲームモード</title> 
 </head>
 <body>
   <div id="waitingRoom">
@@ -285,7 +285,7 @@
     }
 
     function Home() {
-      window.location.href = 'form';
+      window.location.href = 'home';
     }
   </script>
 </body>

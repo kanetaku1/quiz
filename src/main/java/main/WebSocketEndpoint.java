@@ -4,7 +4,6 @@ import java.io.IOException;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-
 import org.json.JSONObject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +22,6 @@ public class WebSocketEndpoint {
         this.sessionId = sessionId;
         this.user = UserManager.getUser(sessionId);
         sessions.put(sessionId, session);
-        System.out.println(user);
        
         if (user != null) {
             quizManager.addUser(user);
