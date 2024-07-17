@@ -23,11 +23,10 @@
     <div id="userList">
     </div>
   </div>
-  <div>
-    <div id="roomLog">
-      ルームログ
-    </div>
+  <div id="roomLog">
+    ルームログ
   </div>
+  <div id="timer"></div>
 
   <div id="waitingRoom">
     <h1>ルーム作成</h1>
@@ -58,7 +57,7 @@
       <h1>写真パス</h1>
       <img id="image" src="#">
     </div>
-    <div id="gameLog">ゲームログ</div>
+    <div id="gameLog"></div>
     <div id="answerSection" style="display:none;">
       <p id="inputText"></p>
       <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
@@ -91,6 +90,7 @@
   </div>
 
   <script>
+    var timer;
     var chatLog = document.getElementById("chatLog");
     var roomLog = document.getElementById("roomLog");
     var quiz = document.getElementById("quiz");
@@ -154,22 +154,24 @@
         } else {
           imageSection.style.display = "none"; //写真パスがない場合、非表示にする
         }
+        startTimer(data.timeout); // Timerスタート
       } else if (data.type == "gameStarted"){
         genre.textContent = data.content;
         document.getElementById("waitingRoom").style.display = "none";
         document.getElementById("gameScreen").style.display = "block";
       } else if (data.type === "ServerMessage"){
         gameLog.innerHTML = "<p>" + data.content + "</p>";
-      } else if (data.type === "gameEnd"){
-        makeScores(data.scores);
-        document.getElementById("gameScreen").style.display = "none";
-        document.getElementById("userLog").style.display = "none";
-        document.getElementById("scoreBoard").style.display = "block";
       } else if(data.type === "displayAnswer"){
         answerSection.style.display = "none";
         displayAnswer.style.display = "block";
         display_answer.textContent = currentAnswer;
-      }
+      } else if (data.type === "gameEnd"){
+        makeScores(data.scores);
+        document.getElementById("gameScreen").style.display = "none";
+        document.getElementById("userLog").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+        document.getElementById("scoreBoard").style.display = "block";
+      } 
     };
 
     /// チャットのメッセージをサーバーへ送信
@@ -186,10 +188,10 @@
     /// ユーザ情報を共有
     function updateUserList(userList) {
       const userListElement = document.getElementById('userList');
-      userListElement.innerHTML = '';
+      userListElement.innerHTML = '<p>ユーザーリスト</p><br>';
       userList.forEach(user => {
         const userElement = document.createElement('p');
-        userElement.innerHTML = `
+        userElement.innerHTML += `
           <span class="username">${user.username}</span>
           <span class="score">${user.score}</span>
         `;
@@ -199,6 +201,7 @@
 
     /// 入力された回答をサーバーへ送信
     function sendAnswer() {
+      clearInterval(timer);
       var answerInput = document.getElementById("inputText");
       var Answer = answerInput.textContent;
       webSocket.send(JSON.stringify({
@@ -278,7 +281,6 @@
       return array;
     }
 
-
     function clickButtonAnswer(text) {
       const answerInput = document.getElementById("inputText");
       answerInput.textContent += text;
@@ -289,6 +291,24 @@
       }
     }
 
+    function startTimer(timeout) {
+      var timeLeft = timeout;
+      var timerElement = document.getElementById("timer");
+      
+      clearInterval(timer); // 既存のタイマーをクリア
+
+      timer = setInterval(function() {
+        timerElement.textContent = timeLeft;
+        timeLeft--;
+        
+        if (timeLeft < 0) {
+          clearInterval(timer);
+          webSocket.send(JSON.stringify({
+            action: "giveUp",
+          })); 
+        }
+      }, 1000);
+    }
 
     //結果を表示
     function makeScores(scores){

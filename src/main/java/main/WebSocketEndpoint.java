@@ -25,9 +25,8 @@ public class WebSocketEndpoint {
        
         if (user != null) {
             quizManager.addUser(user);
-            broadcastMessage(createJsonMessage("room", user.getUsername() + " join this room"));
+            broadcastMessage(createJsonMessage("room", user.getUsername() + " join."));
             broadcastUserList();
-            sendMessage(session, createJsonMessage("room", "Successfully connected to the quiz game."));
         } else {
             sendMessage(session, createJsonMessage("room", "User not found."));
             try{
@@ -54,13 +53,18 @@ public class WebSocketEndpoint {
                 if(user.getUserType() == User.UserType.HOST) {
                     startGame(jsonMessage);
                 }
+                break;
+            case "giveUp":
+                quizManager.giveUp(user);
+                sendMessage(session, createJsonMessage("ServerMessage", "Time Over"));
+                checkAllAnswered();
         }
     }
 
     @OnClose
     public void onClose(Session session) {
         sessions.remove(sessionId);
-        broadcastMessage(createJsonMessage("room", user.getUsername() + " leave this room"));
+        broadcastMessage(createJsonMessage("room", user.getUsername() + " leave."));
         broadcastUserList();
         if (user != null) {
             quizManager.removeUser(user.getUsername());
@@ -75,43 +79,48 @@ public class WebSocketEndpoint {
     }
 
     private void startGame(JSONObject message) {
-        try {
-            String genre = message.getString("genre");
-            quizManager.prepareQuiz(genre);
-            broadcastMessage(createJsonMessage("chat", "「" + genre + "」 Quiz will be Start !!!"));;
-            Thread.sleep(4000);
-            broadcastMessage(createJsonMessage("gameStarted", genre));
-            sendNextQuestion();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        String genre = message.getString("genre");
+        quizManager.prepareQuiz(genre);
+        broadcastMessage(createJsonMessage("chat", "「" + genre + "」 Quiz will be Start !!!"));;
+        sendNextQuestion();
+        broadcastMessage(createJsonMessage("gameStarted", genre));
     }
 
     private void submitAnswer(JSONObject message) {
         String answer = message.getString("answer");
         boolean isCorrect = quizManager.checkAnswer(user, answer);
+        if (isCorrect) {
+            broadcastUserList();
+            // 正解音
+        } else {
+            // 不正解音
+        }
         sendMessage(session, createJsonMessage("ServerMessage", isCorrect ? "Correct!" : "Incorrect!"));
+        checkAllAnswered();
+    }
+
+    private void checkAllAnswered(){
         if (quizManager.allAnswered()) {
-            try {
-                broadcastMessage(createJsonMessage("displayAnswer" , null));
-                broadcastUserList();
-                Thread.sleep(5000);//答えを表示する時間を確保
-                if (quizManager.hasMoreQuestions()) {
-                    sendNextQuestion();
-                } else {
-                    endGame();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            broadcastMessage(createJsonMessage("displayAnswer" , null));
+            sendNextQuestion();
         }
     }
 
     private void sendNextQuestion() {
-        String nextQuiz = quizManager.getNextQuestion();
-        broadcastMessage(new JSONObject(nextQuiz)
-            .put("type", "quiz")
-            .toString());
+        try {
+            Thread.sleep(5000);//前の問題の答え表示時間を確保
+            if (quizManager.hasMoreQuestions()) {
+                String nextQuiz = quizManager.getNextQuestion();
+                broadcastMessage(new JSONObject(nextQuiz)
+                    .put("type", "quiz")
+                    .put("timeout", 40)
+                    .toString());
+            } else {
+                endGame();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void endGame() {
