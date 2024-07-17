@@ -60,15 +60,14 @@
     </div>
     <div id="gameLog">ゲームログ</div>
     <div id="answerSection" style="display:none;">
-      <input type="text" id="inputText" name="inputText">
-      <button onclick="sendAnswer()">Send</button>
-      <button class="answer-button">上</button>
-      <button class="answer-button">右</button>
-      <button class="answer-button">左</button>
-      <button class="answer-button">下</button>
+      <p id="inputText"></p>
+      <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
+      <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">右</button>
+      <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">左</button>
+      <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">下</button>
     </div>
     <div id="displayAnswer" style="display:none;">
-      <h1>正解</h1>
+      <h1>A.</h1>
       <h3 id="display_answer">answer</h3>
     </div>
   </div>
@@ -201,12 +200,12 @@
     /// 入力された回答をサーバーへ送信
     function sendAnswer() {
       var answerInput = document.getElementById("inputText");
-      var Answer = answerInput.value;
+      var Answer = answerInput.textContent;
       webSocket.send(JSON.stringify({
         action: "submitAnswer", 
         answer: Answer
       }));
-      answerInput.value = "";
+      answerInput.textContent = "";
       answerSection.style.display = "none"; // 次の問題のために解答セクションを非表示にする
     }
 
@@ -279,18 +278,17 @@
       return array;
     }
 
-    // ボタンがクリックされたときにテキストボックスにひらがなを入力するイベントリスナー
-    answerButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        const inputText = document.getElementById("inputText");
-        inputText.value += button.textContent;
-        if(currentAnswer.length <= currentIndex){
-          sendAnswer();//解答の文字数分入力したら、強制的に解答を送信
-        }else{
-          updateAnswerButtons(); // ボタンを再度更新
-        }
-      });
-    });
+
+    function clickButtonAnswer(text) {
+      const answerInput = document.getElementById("inputText");
+      answerInput.textContent += text;
+      if (currentAnswer.length <= currentIndex) {
+        sendAnswer(); // 解答の文字数分入力したら、強制的に解答を送信
+      } else {
+        updateAnswerButtons(); // ボタンを再度更新
+      }
+    }
+
 
     //結果を表示
     function makeScores(scores){
