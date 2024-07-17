@@ -25,10 +25,11 @@ public class WebSocketEndpoint {
        
         if (user != null) {
             quizManager.addUser(user);
+            broadcastMessage(createJsonMessage("room", user.getUsername() + " join this room"));
             broadcastUserList();
-            sendMessage(session, createJsonMessage("chat", "Successfully connected to the quiz game."));
+            sendMessage(session, createJsonMessage("room", "Successfully connected to the quiz game."));
         } else {
-            sendMessage(session, createJsonMessage("chat", "User not found."));
+            sendMessage(session, createJsonMessage("room", "User not found."));
             try{
                 session.close();
             } catch (IOException e){
@@ -59,6 +60,7 @@ public class WebSocketEndpoint {
     @OnClose
     public void onClose(Session session) {
         sessions.remove(sessionId);
+        broadcastMessage(createJsonMessage("room", user.getUsername() + " leave this room"));
         broadcastUserList();
         if (user != null) {
             quizManager.removeUser(user.getUsername());
@@ -73,10 +75,16 @@ public class WebSocketEndpoint {
     }
 
     private void startGame(JSONObject message) {
-        String genre = message.getString("genre");
-        quizManager.prepareQuiz(genre);
-        broadcastMessage(createJsonMessage("gameStarted", genre));
-        sendNextQuestion();
+        try {
+            String genre = message.getString("genre");
+            quizManager.prepareQuiz(genre);
+            broadcastMessage(createJsonMessage("chat", "「" + genre + "」 Quiz will be Start !!!"));;
+            Thread.sleep(4000);
+            broadcastMessage(createJsonMessage("gameStarted", genre));
+            sendNextQuestion();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void submitAnswer(JSONObject message) {

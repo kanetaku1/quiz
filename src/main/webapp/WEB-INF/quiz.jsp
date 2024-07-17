@@ -19,8 +19,15 @@
   <title>ゲームモード</title> 
 </head>
 <body>
-  <h1>ユーザーリスト</h1>
-  <div id="userList"></div>
+  <div id="userLog">
+    <div id="userList">
+    </div>
+  </div>
+  <div>
+    <div id="roomLog">
+      ルームログ
+    </div>
+  </div>
 
   <div id="waitingRoom">
     <h1>ルーム作成</h1>
@@ -36,14 +43,14 @@
       <p>ホストがゲームを開始するのを待っています...</p>
     <% } %>
     <br>
-    <div id="log"></div>
+    <div id="chatLog"></div>
     <input type="text" id="message" placeholder="Type a message...">
     <button onclick="sendMessage()">Send</button>
   </div>
 
   <div id="gameScreen" style="display:none;">
-    <p id="userType"><%= user.getUserType() %></p>
-    <h1>ジャンル</h1>
+    <!-- <p id="userType"><%= user.getUserType() %></p> -->
+    <h3>ジャンル</h3>
     <p id="genre"></p>
     <h1>問題</h1>
     <p id="quiz"></p>
@@ -85,11 +92,12 @@
   </div>
 
   <script>
-    var log = document.getElementById("log");
+    var chatLog = document.getElementById("chatLog");
+    var roomLog = document.getElementById("roomLog");
     var quiz = document.getElementById("quiz");
     var image = document.getElementById("image");
     var gameLog = document.getElementById("gameLog");
-    const userType = document.getElementById("userType");
+    // const userType = document.getElementById("userType");
     const genre = document.getElementById("genre");
 
     // WebSocket接続
@@ -110,23 +118,25 @@
 
     webSocket.onopen = function(event) {
       console.log("WebSocket connection opened.");
-      log.innerHTML += "<p>WebSocket connection opened.</p>";
+      roomLog.innerHTML += "<p>WebSocket connection opened.</p>";
     };
 
     webSocket.onerror = function(error) {
       console.error("WebSocket error: " + error);
-      log.innerHTML += "<p>Error: " + error + "</p>";
+      roomLog.innerHTML += "<p>Error: " + error + "</p>";
     };
 
     webSocket.onclose = function(event) {
       console.log("WebSocket connection closed.");
-      log.innerHTML += "<p>WebSocket connection closed.</p>";
+      roomLog.innerHTML += "<p>WebSocket connection closed.</p>";
     };
 
     webSocket.onmessage = function(event) {
       var data = JSON.parse(event.data);
       if (data.type === "chat") {
-        log.innerHTML += "<p>" + data.content + "</p>";
+        chatLog.innerHTML += "<p>" + data.content + "</p>";
+      } else if (data.type === "room") {
+        roomLog.innerHTML += "<p>" + data.content + "</p>";
       } else if (data.type === "userList") {
         updateUserList(JSON.parse(data.data));
       } else if (data.type == "quiz") {
@@ -154,8 +164,9 @@
       } else if (data.type === "gameEnd"){
         makeScores(data.scores);
         document.getElementById("gameScreen").style.display = "none";
+        document.getElementById("userLog").style.display = "none";
         document.getElementById("scoreBoard").style.display = "block";
-      }else if(data.type === "displayAnswer"){
+      } else if(data.type === "displayAnswer"){
         answerSection.style.display = "none";
         displayAnswer.style.display = "block";
         display_answer.textContent = currentAnswer;
@@ -178,11 +189,9 @@
       const userListElement = document.getElementById('userList');
       userListElement.innerHTML = '';
       userList.forEach(user => {
-        const userElement = document.createElement('div');
-        userElement.className = 'user';
+        const userElement = document.createElement('p');
         userElement.innerHTML = `
           <span class="username">${user.username}</span>
-          <span class="userType">${user.userType}</span>
           <span class="score">${user.score}</span>
         `;
         userListElement.appendChild(userElement);
@@ -205,11 +214,10 @@
     document.getElementById("select").addEventListener("click", function() {
       var dropdown = document.getElementById("dropdown");
       var selectedGenre = dropdown.value;
-      var message = {
+      webSocket.send(JSON.stringify({
         action: "startGame",
         genre: selectedGenre
-      };
-      webSocket.send(JSON.stringify(message)); 
+      })); 
     });
 
     //一文字ずつ表示
