@@ -91,9 +91,6 @@ public class WebSocketEndpoint {
         boolean isCorrect = quizManager.checkAnswer(user, answer);
         if (isCorrect) {
             broadcastUserList();
-            // 正解音
-        } else {
-            // 不正解音
         }
         sendMessage(session, createJsonMessage("ServerMessage", isCorrect ? "Correct!" : "Incorrect!"));
         checkAllAnswered();

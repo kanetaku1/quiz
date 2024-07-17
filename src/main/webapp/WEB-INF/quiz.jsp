@@ -19,6 +19,10 @@
   <title>ゲームモード</title> 
 </head>
 <body>
+  <audio id="bgmAudio" loop>
+    <source src="resources/Specification.mp3" type="audio/mpeg">
+  </audio>
+
   <div id="userLog">
     <div id="userList">
     </div>
@@ -91,6 +95,7 @@
 
   <script>
     var timer;
+    var bgmAudio = document.getElementById("bgmAudio");
     var chatLog = document.getElementById("chatLog");
     var roomLog = document.getElementById("roomLog");
     var quiz = document.getElementById("quiz");
@@ -117,6 +122,7 @@
 
     webSocket.onopen = function(event) {
       console.log("WebSocket connection opened.");
+      bgmAudio.play();
       roomLog.innerHTML += "<p>WebSocket connection opened.</p>";
     };
 
