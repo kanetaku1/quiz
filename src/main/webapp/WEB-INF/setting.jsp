@@ -34,6 +34,43 @@
     </form>
   </div>
   <script>
+    document.getElementById('soundSettingsForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // フォームの値を取得
+      const bgmEnabled = document.getElementById('bgm').checked;
+      const effectsEnabled = document.getElementById('effects').checked;
+      const bgmVolume = document.getElementById('bgmVolume').value;
+      const effectsVolume = document.getElementById('effectsVolume').value;
+      
+      // LocalStorageに保存
+      localStorage.setItem('bgmEnabled', bgmEnabled);
+      localStorage.setItem('effectsEnabled', effectsEnabled);
+      localStorage.setItem('bgmVolume', bgmVolume);
+      localStorage.setItem('effectsVolume', effectsVolume);
+      
+      alert('設定が保存されました');
+    });
+
+    // ページロード時に保存された設定を読み込む
+    window.addEventListener('load', function() {
+      const bgmEnabled = localStorage.getItem('bgmEnabled');
+      const effectsEnabled = localStorage.getItem('effectsEnabled');
+      const bgmVolume = localStorage.getItem('bgmVolume');
+      const effectsVolume = localStorage.getItem('effectsVolume');
+      
+      if (bgmEnabled !== null) document.getElementById('bgm').checked = bgmEnabled === 'true';
+      if (effectsEnabled !== null) document.getElementById('effects').checked = effectsEnabled === 'true';
+      if (bgmVolume !== null) {
+        document.getElementById('bgmVolume').value = bgmVolume;
+        document.getElementById('bgmVolumeOutput').innerText = bgmVolume;
+      }
+      if (effectsVolume !== null) {
+        document.getElementById('effectsVolume').value = effectsVolume;
+        document.getElementById('effectsVolumeOutput').innerText = effectsVolume;
+      }
+    });
+    
     function Home() {
       window.location.href = 'home';
     }

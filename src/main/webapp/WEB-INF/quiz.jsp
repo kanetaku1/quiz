@@ -22,6 +22,12 @@
   <audio id="bgmAudio" loop>
     <source src="resources/Specification.mp3" type="audio/mpeg">
   </audio>
+  <!-- <audio id="correctSound">
+    <source src="correct.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="incorrectSound">
+    <source src="incorrect.mp3" type="audio/mpeg">
+  </audio> -->
 
   <div id="userLog">
     <div id="userList">
@@ -95,7 +101,6 @@
 
   <script>
     var timer;
-    var bgmAudio = document.getElementById("bgmAudio");
     var chatLog = document.getElementById("chatLog");
     var roomLog = document.getElementById("roomLog");
     var quiz = document.getElementById("quiz");
@@ -103,6 +108,8 @@
     var gameLog = document.getElementById("gameLog");
     // const userType = document.getElementById("userType");
     const genre = document.getElementById("genre");
+    const bgmAudio = document.getElementById("bgmAudio");
+    // const effectsAudio = document.getElementById('correctSound');
 
     // WebSocket接続
     var webSocket = new WebSocket("ws://localhost:8888/quiz/websocket/<%= sessionId %>");
@@ -122,7 +129,7 @@
 
     webSocket.onopen = function(event) {
       console.log("WebSocket connection opened.");
-      bgmAudio.play();
+      applyAudioSettings();
       roomLog.innerHTML += "<p>WebSocket connection opened.</p>";
     };
 
@@ -199,7 +206,8 @@
         const userElement = document.createElement('p');
         userElement.innerHTML += `
           <span class="username">${user.username}</span>
-          <span class="score">${user.score}</span>
+          <span class="userType">${user.userType}</span>
+          <span class="score">${user.score}</span><br>
         `;
         userListElement.appendChild(userElement);
       });
@@ -334,6 +342,33 @@
         row.appendChild(scoreCell);
         resultTable.appendChild(row);
       });
+    }
+
+    // 設定を適用する関数
+    function applyAudioSettings() {
+      const bgmEnabled = localStorage.getItem('bgmEnabled') === 'true';
+      const effectsEnabled = localStorage.getItem('effectsEnabled') === 'true';
+      const bgmVolume = localStorage.getItem('bgmVolume') || '50';
+      const effectsVolume = localStorage.getItem('effectsVolume') || '50';
+      
+      // BGMの設定を適用
+      if (bgmEnabled) {
+        bgmAudio.volume = parseInt(bgmVolume) / 100;
+        bgmAudio.play();
+      } else {
+         bgmAudio.pause();
+      }
+      
+      // 効果音の設定を適用
+      // effectsAudio.volume = parseInt(effectsVolume) / 100;
+      // effectsAudio.muted = !effectsEnabled;
+    }
+
+    // 効果音を再生する関数（例）
+    function playEffectSound() {
+      if (localStorage.getItem('effectsEnabled') === 'true') {
+        effectsAudio.play();
+      }
     }
 
     function Home() {
