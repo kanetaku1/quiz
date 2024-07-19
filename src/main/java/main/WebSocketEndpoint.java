@@ -25,9 +25,10 @@ public class WebSocketEndpoint {
        
         if (user != null) {
             quizManager.addUser(user);
-            sendMessage(session, createJsonMessage("chat", "Successfully connected to the quiz game."));
+            broadcastMessage(createJsonMessage("room", user.getUsername() + " join."));
+            broadcastUserList();
         } else {
-            sendMessage(session, createJsonMessage("chat", "User not found."));
+            sendMessage(session, createJsonMessage("room", "User not found."));
             try{
                 session.close();
             } catch (IOException e){
@@ -52,12 +53,19 @@ public class WebSocketEndpoint {
                 if(user.getUserType() == User.UserType.HOST) {
                     startGame(jsonMessage);
                 }
+                break;
+            case "giveUp":
+                quizManager.giveUp(user);
+                sendMessage(session, createJsonMessage("ServerMessage", "Time Over"));
+                checkAllAnswered();
         }
     }
 
     @OnClose
     public void onClose(Session session) {
         sessions.remove(sessionId);
+        broadcastMessage(createJsonMessage("room", user.getUsername() + " leave."));
+        broadcastUserList();
         if (user != null) {
             quizManager.removeUser(user.getUsername());
         }
@@ -73,28 +81,43 @@ public class WebSocketEndpoint {
     private void startGame(JSONObject message) {
         String genre = message.getString("genre");
         quizManager.prepareQuiz(genre);
-        broadcastMessage(createJsonMessage("gameStarted", genre));
+        broadcastMessage(createJsonMessage("chat", "「" + genre + "」 Quiz will be Start !!!"));;
         sendNextQuestion();
+        broadcastMessage(createJsonMessage("gameStarted", genre));
     }
 
     private void submitAnswer(JSONObject message) {
         String answer = message.getString("answer");
         boolean isCorrect = quizManager.checkAnswer(user, answer);
+        if (isCorrect) {
+            broadcastUserList();
+        }
         sendMessage(session, createJsonMessage("ServerMessage", isCorrect ? "Correct!" : "Incorrect!"));
+        checkAllAnswered();
+    }
+
+    private void checkAllAnswered(){
         if (quizManager.allAnswered()) {
-            if (quizManager.hasMoreQuestions()) {
-                sendNextQuestion();
-            } else {
-                endGame();
-            }
+            broadcastMessage(createJsonMessage("displayAnswer" , null));
+            sendNextQuestion();
         }
     }
 
     private void sendNextQuestion() {
-        String nextQuiz = quizManager.getNextQuestion();
-        broadcastMessage(new JSONObject(nextQuiz)
-            .put("type", "quiz")
-            .toString());
+        try {
+            Thread.sleep(5000);//前の問題の答え表示時間を確保
+            if (quizManager.hasMoreQuestions()) {
+                String nextQuiz = quizManager.getNextQuestion();
+                broadcastMessage(new JSONObject(nextQuiz)
+                    .put("type", "quiz")
+                    .put("timeout", 40)
+                    .toString());
+            } else {
+                endGame();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void endGame() {
@@ -108,6 +131,14 @@ public class WebSocketEndpoint {
         broadcastMessage(new JSONObject()
             .put("type", "gameEnd")
             .put("scores", scoreBuilder)
+            .toString());
+    }
+
+    private void broadcastUserList() {
+        String userListJson = quizManager.getUserListJson();
+        broadcastMessage(new JSONObject()
+            .put("type", "userList")
+            .put("data", userListJson)
             .toString());
     }
 

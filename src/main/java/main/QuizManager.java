@@ -2,20 +2,15 @@ package main;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class QuizManager {
   private QuizList quizList;
   private int currentQuestionIndex;
-  private Map<String, User> users;
-  private Map<User, Boolean> answered;
-  private GetQuiz quizGetter;
-
-  public QuizManager() {
-    this.quizGetter = new GetQuiz();
-    this.users = new ConcurrentHashMap<>();
-    this.answered = new ConcurrentHashMap<>();
-  }
+  private Map<String, User> users = new ConcurrentHashMap<>();
+  private Map<User, Boolean> answered = new ConcurrentHashMap<>();
+  private GetQuiz quizGetter = new GetQuiz();
 
   public void prepareQuiz(String genre) {
     quizGetter.getQuizData(genre);
@@ -39,11 +34,13 @@ public class QuizManager {
     if (currentQuestionIndex < quizList.getQuestions().size()) {
       String question = quizList.getQuestions().get(currentQuestionIndex);
       String imagePath = quizList.getImagePaths().get(currentQuestionIndex);
+      String answer = quizList.getAnswers().get(currentQuestionIndex);
       currentQuestionIndex++;
       answered.clear(); // 新しい問題のため、回答状況をリセット
       JSONObject quizData = new JSONObject();
       quizData.put("question", question);
       quizData.put("imagePath", imagePath);
+      quizData.put("answer", answer);
       return quizData.toString();
     }
     return null;
@@ -60,6 +57,10 @@ public class QuizManager {
       return isCorrect;
     }
     return false;
+  }
+
+  public void giveUp(User user) {
+    answered.put(user, true);
   }
 
   public boolean allAnswered() {
@@ -91,5 +92,17 @@ public class QuizManager {
       return quizList.getImagePaths().get(currentQuestionIndex - 1);
     }
     return null;
+  }
+
+  public String getUserListJson() {
+    JSONArray userListJson = new JSONArray();
+    for (User user : users.values()) {
+      JSONObject userJson = new JSONObject();
+      userJson.put("username", user.getUsername());
+      userJson.put("userType", user.getUserType().toString());
+      userJson.put("score", user.getScore());
+      userListJson.put(userJson);
+    }
+    return userListJson.toString();
   }
 }

@@ -1,8 +1,47 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #ccdde9;
+}
+
 #dropdown {
   overflow-y: scroll;
   height: 30px;
 }
 
-h1 {
-  text-align: center;
+#userLog {
+  display: flex;
+  width: 200px;
+  margin-top: 20px;
+  margin-right: 10%;
+}
+
+#roomLog {
+  float: right;
+  display: flex;
+  width: 200px;
+  height: 500px;
+  padding-right: 10%;
+}
+
+#userList {
+  float: right;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  border: 1px solid #000;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.username {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.userType{
+  margin-right: 10px;
+}
+
+.score {
+  color: #007bff;
 }

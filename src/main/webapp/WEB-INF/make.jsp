@@ -95,6 +95,7 @@
         return false;
       } else {
         formError.style.display = "none";
+        alert('問題が作成されました。');
         return true;
       }
     }
