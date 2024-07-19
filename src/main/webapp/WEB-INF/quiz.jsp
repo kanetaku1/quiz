@@ -10,12 +10,13 @@
 %>
 
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/quiz.css">
-  <title>クイズゲーム</title> 
+  <link rel="stylesheet" href="css/result.css">
+  <title>ゲームモード</title> 
 </head>
 <body>
   <div id="waitingRoom">
@@ -43,18 +44,28 @@
     <p id="genre"></p>
     <h1>問題</h1>
     <p id="quiz"></p>
-    <h1>写真パス</h1>
-    <img id="image" src="#">
-    <form id="sendForm">
-      <input type="text" id="inputText" name="inputText">
-      <input type="submit" id="submitButton" value="submit">
-    </form>
+    <div id="imageSection">
+      <h1>写真パス</h1>
+      <img id="image" src="#">
+    </div>
     <div id="gameLog">ゲームログ</div>
+    <div id="answerSection" class="answerSection" style="display:none;">
+      <p id="inputText"></p>
+      <button id="upButton" class="answer-button cross-layout-position-top" onclick="clickButtonAnswer(this.textContent)">上</button>
+      <button id="leftButton" class="answer-button cross-layout-position-left" onclick="clickButtonAnswer(this.textContent)">左</button>
+      <button id="rightButton" class="answer-button cross-layout-position-right" onclick="clickButtonAnswer(this.textContent)">右</button>
+      <button id="downButton" class="answer-button cross-layout-position-bottom" onclick="clickButtonAnswer(this.textContent)">下</button>
+    </div>         
+    
+    <div id="displayAnswer" style="display:none;">
+      <h1>A.</h1>
+      <h3 id="display_answer">answer</h3>
+    </div>
   </div>
 
   <div id="scoreBoard" style="display: none;">
     <div class="button-container">
-      <button id="transition-button">ホームに戻る</button>
+      <button onclick="Home()">ホームに戻る</button>
     </div>
     <h1>🌷結果発表🌷</h1>
     <table>
@@ -79,7 +90,23 @@
     const genre = document.getElementById("genre");
 
     // WebSocket接続
-    var webSocket = new WebSocket("ws://localhost:8888/quiz/websocket/<%= sessionId %>");
+    // WebSocket接続
+    const host = window.location.hostname;
+    const port = window.location.port;
+    var webSocket = new WebSocket(`ws://${host}:${port}/quiz/websocket/<%= sessionId %>`);
+
+    // ひらがなボタンのリスト
+    const answerButtons = document.querySelectorAll(".answer-button");
+    // ひらがな文字リスト
+    const hiragana = ["ー","あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ", "さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と", "な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ", "ま", "み", "む", "め", "も", "や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ", "わ", "を", "ん"];
+    const katakana = ["ア", "イ", "ウ", "エ", "オ", "カ", "キ", "ク", "ケ", "コ", "サ", "シ", "ス", "セ", "ソ", "タ", "チ", "ツ", "テ", "ト", "ナ", "ニ", "ヌ", "ネ", "ノ", "ハ", "ヒ", "フ", "ヘ", "ホ", "マ", "ミ", "ム", "メ", "モ", "ヤ", "ユ", "ヨ", "ラ", "リ", "ル", "レ", "ロ", "ワ", "ヲ", "ン"];
+    const numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    const english = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+
+    let usingList = [];
+    let displayword_4 = [];
+    var currentIndex = 0;
+    var currentAnswer;
 
     webSocket.onopen = function(event) {
       console.log("WebSocket connection opened.");
@@ -101,37 +128,66 @@
       if (data.type == "chat") {
         log.innerHTML += "<p>" + data.content + "</p>";
       } else if (data.type == "quiz") {
-        //quiz.textContent = data.question;
+        displayAnswer.style.display = "none";
+        imageSection.style.display = "block";
         quiz.textContent = "";
-        displayCharbychar(data.question);
-        image.src = data.imagePath;
+        currentAnswer = data.answer;//現在の問題の答えを取得
+        displayCharbychar(data.question, function() {
+          answerSection.style.display = "block";
+          currentIndex = 0;
+          selectDisplayWordList(currentAnswer[currentIndex]);
+          updateAnswerButtons();
+        });
+        if (data.imagePath) {
+          image.src = data.imagePath;
+        } else {
+          imageSection.style.display = "none"; //写真パスがない場合、非表示にする
+        }
+        
       } else if (data.type == "gameStarted"){
         genre.textContent = data.content;
         document.getElementById("waitingRoom").style.display = "none";
         document.getElementById("gameScreen").style.display = "block";
       } else if (data.type == "ServerMessage"){
-        gameLog.innerHTML += "<p>" + data.content + "</p>";
+        gameLog.innerHTML = "<p>" + data.content + "</p>";
       } else if (data.type == "gameEnd"){
-        // // リンク先のURLを構築
-        // var url = "ForwardToResult" + encodeURIComponent(selectedGenre);
-        // window.location.href = url;
         makeScores(data.scores);
         document.getElementById("gameScreen").style.display = "none";
         document.getElementById("scoreBoard").style.display = "block";
+      }else if(data.type === "displayAnswer"){
+        answerSection.style.display = "none";
+        displayAnswer.style.display = "block";
+        display_answer.textContent = currentAnswer;
       }
     };
 
+    /// チャットのメッセージをサーバーへ送信
     function sendMessage() {
       var messageInput = document.getElementById("message");
       var message = messageInput.value;
-      webSocket.send(JSON.stringify({action: "chat", message: message}));
+      webSocket.send(JSON.stringify({
+        action: "chat", 
+        message: message
+      }));
       messageInput.value = "";
     }
 
+    /// 入力された回答をサーバーへ送信
+    function sendAnswer() {
+      var answerInput = document.getElementById("inputText");
+      var Answer = answerInput.textContent;
+      webSocket.send(JSON.stringify({
+        action: "submitAnswer", 
+        answer: Answer
+      }));
+      answerInput.textContent = "";
+      answerSection.style.display = "none"; // 次の問題のために解答セクションを非表示にする
+    }
+
+    /// 選択されたジャンルを送信＆ゲームスタート
     document.getElementById("select").addEventListener("click", function() {
       var dropdown = document.getElementById("dropdown");
       var selectedGenre = dropdown.value;
-
       var message = {
         action: "startGame",
         genre: selectedGenre
@@ -140,13 +196,100 @@
     });
 
     //一文字ずつ表示
-    function displayCharbychar(problemStatement){
+    function displayCharbychar(problemStatement, callback){
       for(let i=0;i<problemStatement.length;i++){
         setTimeout(function() {
           quiz.textContent += problemStatement[i];
+          if (i === problemStatement.length - 1) {
+            callback();
+          }
         }, i*200);
       }
     }
+    
+    // ランダムなひらがなをボタンに設定する関数
+    function updateAnswerButtons() {
+      displayword_4 = [];
+      displayword_4.push(currentAnswer[currentIndex]);
+      for (let j = 0; j < 3; j++) {
+        const randomIndex = Math.floor(Math.random() * usingList.length);
+        const randomChar = usingList[randomIndex];
+        displayword_4.push(randomChar);
+      }
+      displayword_4 = shuffleArray(displayword_4);//要素をシャッフルシャッフル♪♪
+      var displayIndex = 0;
+      answerButtons.forEach(button => {
+        button.textContent = displayword_4[displayIndex];
+        displayIndex += 1;
+      });
+      currentIndex += 1;//次の文字のインデックスへ
+    }
+
+    //現在の答えの文字列を判別し、適切なリストを選択する関数
+    function selectDisplayWordList(nowWord) {
+    // カタカナチェック
+      const isKatakana = /^[\u30A0-\u30FF]+$/.test(nowWord);
+    // 英語チェック
+      const isEnglish = /^[A-Za-z]+$/.test(nowWord);
+    // 数字チェック
+      const isDigit = /^[0-9]+$/.test(nowWord);
+
+      if (isKatakana) {
+          usingList = katakana;
+      } else if (isEnglish) {
+          usingList = english;
+      } else if (isDigit) {
+          usingList = numbers;
+      } else {
+          usingList = hiragana;
+      }
+    }
+
+    // Fisher-Yatesアルゴリズムを使用して配列をシャッフルする関数
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+
+    function clickButtonAnswer(text) {
+      const answerInput = document.getElementById("inputText");
+      answerInput.textContent += text;
+      if (currentAnswer.length <= currentIndex) {
+        sendAnswer(); // 解答の文字数分入力したら、強制的に解答を送信
+      } else {
+        updateAnswerButtons(); // ボタンを再度更新
+      }
+    }
+
+    document.addEventListener('keydown', function(event) {
+      let activeButton = null;
+      switch (event.key) {
+        case 'ArrowUp':
+          console.log("upButton");
+          var txt = document.getElementById("upButton").textContent;
+          clickButtonAnswer(txt);
+          break;
+        case 'ArrowLeft':
+          console.log("leftButton");
+          var txt = document.getElementById("leftButton").textContent;
+          clickButtonAnswer(txt);
+          break;
+        case 'ArrowRight':
+          console.log("rightButton");
+          var txt = document.getElementById("rightButton").textContent;
+          clickButtonAnswer(txt);
+          break;
+        case 'ArrowDown':
+          console.log("downButton");
+          var txt = document.getElementById("downButton").textContent;
+          clickButtonAnswer(txt);
+          break;
+      }
+    });
 
     //結果を表示
     function makeScores(scores){
@@ -168,23 +311,9 @@
       });
     }
 
-    // ホームに戻るボタンのイベントリスナーを追加
-    document.getElementById('transition-button').addEventListener('click', () => {
-        window.location.href = 'form'; // ホームページのURLに置き換えてください
-    });
-
-    document.getElementById("sendForm").addEventListener("submit", function(event) {
-      event.preventDefault(); // デフォルトのサブミット動作をキャンセル
-
-      var inputText = document.getElementById("inputText").value;
-      document.getElementById("inputText").value = "";
-
-      var message = {
-        action: "submitAnswer",
-        answer: inputText
-      };
-      webSocket.send(JSON.stringify(message));
-  });
+    function Home() {
+      window.location.href = 'home';
+    }
   </script>
 </body>
 </html>
