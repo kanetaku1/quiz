@@ -49,13 +49,14 @@
       <img id="image" src="#">
     </div>
     <div id="gameLog">ゲームログ</div>
-    <div id="answerSection" style="display:none;">
+    <div id="answerSection" class="answerSection" style="display:none;">
       <p id="inputText"></p>
-      <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
-      <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">右</button>
-      <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">左</button>
-      <button class="answer-button" onclick="clickButtonAnswer(this.textContent)">下</button>
-    </div>
+      <button id="upButton" class="answer-button cross-layout-position-top" onclick="clickButtonAnswer(this.textContent)">上</button>
+      <button id="leftButton" class="answer-button cross-layout-position-left" onclick="clickButtonAnswer(this.textContent)">左</button>
+      <button id="rightButton" class="answer-button cross-layout-position-right" onclick="clickButtonAnswer(this.textContent)">右</button>
+      <button id="downButton" class="answer-button cross-layout-position-bottom" onclick="clickButtonAnswer(this.textContent)">下</button>
+    </div>         
+    
     <div id="displayAnswer" style="display:none;">
       <h1>A.</h1>
       <h3 id="display_answer">answer</h3>
@@ -89,7 +90,10 @@
     const genre = document.getElementById("genre");
 
     // WebSocket接続
-    var webSocket = new WebSocket("ws://localhost:8888/quiz/websocket/<%= sessionId %>");
+    // WebSocket接続
+    const host = window.location.hostname;
+    const port = window.location.port;
+    var webSocket = new WebSocket(`ws://${host}:${port}/quiz/websocket/<%= sessionId %>`);
 
     // ひらがなボタンのリスト
     const answerButtons = document.querySelectorAll(".answer-button");
@@ -261,6 +265,31 @@
       }
     }
 
+    document.addEventListener('keydown', function(event) {
+      let activeButton = null;
+      switch (event.key) {
+        case 'ArrowUp':
+          console.log("upButton");
+          var txt = document.getElementById("upButton").textContent;
+          clickButtonAnswer(txt);
+          break;
+        case 'ArrowLeft':
+          console.log("leftButton");
+          var txt = document.getElementById("leftButton").textContent;
+          clickButtonAnswer(txt);
+          break;
+        case 'ArrowRight':
+          console.log("rightButton");
+          var txt = document.getElementById("rightButton").textContent;
+          clickButtonAnswer(txt);
+          break;
+        case 'ArrowDown':
+          console.log("downButton");
+          var txt = document.getElementById("downButton").textContent;
+          clickButtonAnswer(txt);
+          break;
+      }
+    });
 
     //結果を表示
     function makeScores(scores){
