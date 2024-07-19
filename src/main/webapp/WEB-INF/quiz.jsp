@@ -19,6 +19,25 @@
   <title>ゲームモード</title> 
 </head>
 <body>
+  <audio id="bgmAudio" loop>
+    <source src="resources/Specification.mp3" type="audio/mpeg">
+  </audio>
+  <!-- <audio id="correctSound">
+    <source src="correct.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="incorrectSound">
+    <source src="incorrect.mp3" type="audio/mpeg">
+  </audio> -->
+
+  <div id="userLog">
+    <div id="userList">
+    </div>
+  </div>
+  <div id="roomLog">
+    ルームログ
+  </div>
+  <div id="timer"></div>
+
   <div id="waitingRoom">
     <h1>ルーム作成</h1>
     <% if(user.getUserType() == User.UserType.HOST) { %>
@@ -29,18 +48,29 @@
           <option value="<%= genre %>"><%= genre %></option>
         <% } %>
       </select>
+      <script>
+          /// 選択されたジャンルを送信＆ゲームスタート
+        document.getElementById("select").addEventListener("click", function() {
+          var dropdown = document.getElementById("dropdown");
+          var selectedGenre = dropdown.value;
+          webSocket.send(JSON.stringify({
+            action: "startGame",
+            genre: selectedGenre
+          })); 
+        });
+      </script>
     <% } else { %>
       <p>ホストがゲームを開始するのを待っています...</p>
     <% } %>
     <br>
-    <div id="log"></div>
+    <div id="chatLog"></div>
     <input type="text" id="message" placeholder="Type a message...">
     <button onclick="sendMessage()">Send</button>
   </div>
 
   <div id="gameScreen" style="display:none;">
-    <p id="userType"><%= user.getUserType() %></p>
-    <h1>ジャンル</h1>
+    <!-- <p id="userType"><%= user.getUserType() %></p> -->
+    <h3>ジャンル</h3>
     <p id="genre"></p>
     <h1>問題</h1>
     <p id="quiz"></p>
@@ -49,12 +79,12 @@
       <img id="image" src="#">
     </div>
     <div id="gameLog">ゲームログ</div>
-    <div id="answerSection" class="answerSection" style="display:none;">
+    <div id="answerSection" style="display:none;">
       <p id="inputText"></p>
-      <button id="upButton" class="answer-button cross-layout-position-top" onclick="clickButtonAnswer(this.textContent)">上</button>
-      <button id="leftButton" class="answer-button cross-layout-position-left" onclick="clickButtonAnswer(this.textContent)">左</button>
-      <button id="rightButton" class="answer-button cross-layout-position-right" onclick="clickButtonAnswer(this.textContent)">右</button>
-      <button id="downButton" class="answer-button cross-layout-position-bottom" onclick="clickButtonAnswer(this.textContent)">下</button>
+      <button id="upButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
+      <button id="downButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">下</button>
+      <button id="leftButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">左</button>
+      <button id="rightButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">右</button>
     </div>         
     
     <div id="displayAnswer" style="display:none;">
@@ -82,19 +112,24 @@
   </div>
 
   <script>
-    var log = document.getElementById("log");
+    var timer;
+    var chatLog = document.getElementById("chatLog");
+    var roomLog = document.getElementById("roomLog");
     var quiz = document.getElementById("quiz");
     var image = document.getElementById("image");
     var gameLog = document.getElementById("gameLog");
-    const userType = document.getElementById("userType");
+    // const userType = document.getElementById("userType");
     const genre = document.getElementById("genre");
+    const bgmAudio = document.getElementById("bgmAudio");
+    // const effectsAudio = document.getElementById('correctSound');
+    var answerSection = document.getElementById("answerSection");
 
     // WebSocket接続
     // WebSocket接続
     const host = window.location.hostname;
     const port = window.location.port;
     var webSocket = new WebSocket(`ws://${host}:${port}/quiz/websocket/<%= sessionId %>`);
-
+    
     // ひらがなボタンのリスト
     const answerButtons = document.querySelectorAll(".answer-button");
     // ひらがな文字リスト
@@ -107,26 +142,32 @@
     let displayword_4 = [];
     var currentIndex = 0;
     var currentAnswer;
+    let isAnswerMode = false;
 
     webSocket.onopen = function(event) {
       console.log("WebSocket connection opened.");
-      log.innerHTML += "<p>WebSocket connection opened.</p>";
+      applyAudioSettings();
+      roomLog.innerHTML += "<p>WebSocket connection opened.</p>";
     };
 
     webSocket.onerror = function(error) {
       console.error("WebSocket error: " + error);
-      log.innerHTML += "<p>Error: " + error + "</p>";
+      roomLog.innerHTML += "<p>Error: " + error + "</p>";
     };
 
     webSocket.onclose = function(event) {
       console.log("WebSocket connection closed.");
-      log.innerHTML += "<p>WebSocket connection closed.</p>";
+      roomLog.innerHTML += "<p>WebSocket connection closed.</p>";
     };
 
     webSocket.onmessage = function(event) {
       var data = JSON.parse(event.data);
-      if (data.type == "chat") {
-        log.innerHTML += "<p>" + data.content + "</p>";
+      if (data.type === "chat") {
+        chatLog.innerHTML += "<p>" + data.content + "</p>";
+      } else if (data.type === "room") {
+        roomLog.innerHTML += "<p>" + data.content + "</p>";
+      } else if (data.type === "userList") {
+        updateUserList(JSON.parse(data.data));
       } else if (data.type == "quiz") {
         displayAnswer.style.display = "none";
         imageSection.style.display = "block";
@@ -143,22 +184,24 @@
         } else {
           imageSection.style.display = "none"; //写真パスがない場合、非表示にする
         }
-        
+        startTimer(data.timeout); // Timerスタート
       } else if (data.type == "gameStarted"){
         genre.textContent = data.content;
         document.getElementById("waitingRoom").style.display = "none";
         document.getElementById("gameScreen").style.display = "block";
-      } else if (data.type == "ServerMessage"){
+      } else if (data.type === "ServerMessage"){
         gameLog.innerHTML = "<p>" + data.content + "</p>";
-      } else if (data.type == "gameEnd"){
-        makeScores(data.scores);
-        document.getElementById("gameScreen").style.display = "none";
-        document.getElementById("scoreBoard").style.display = "block";
-      }else if(data.type === "displayAnswer"){
+      } else if(data.type === "displayAnswer"){
         answerSection.style.display = "none";
         displayAnswer.style.display = "block";
         display_answer.textContent = currentAnswer;
-      }
+      } else if (data.type === "gameEnd"){
+        makeScores(data.scores);
+        document.getElementById("gameScreen").style.display = "none";
+        document.getElementById("userLog").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+        document.getElementById("scoreBoard").style.display = "block";
+      } 
     };
 
     /// チャットのメッセージをサーバーへ送信
@@ -171,9 +214,25 @@
       }));
       messageInput.value = "";
     }
+    
+    /// ユーザ情報を共有
+    function updateUserList(userList) {
+      const userListElement = document.getElementById('userList');
+      userListElement.innerHTML = '<p>ユーザーリスト</p><br>';
+      userList.forEach(user => {
+        const userElement = document.createElement('p');
+        userElement.innerHTML += `
+          <span class="username">${user.username}</span>
+          <span class="userType">${user.userType}</span>
+          <span class="score">${user.score}</span><br>
+        `;
+        userListElement.appendChild(userElement);
+      });
+    }
 
     /// 入力された回答をサーバーへ送信
     function sendAnswer() {
+      clearInterval(timer);
       var answerInput = document.getElementById("inputText");
       var Answer = answerInput.textContent;
       webSocket.send(JSON.stringify({
@@ -183,18 +242,7 @@
       answerInput.textContent = "";
       answerSection.style.display = "none"; // 次の問題のために解答セクションを非表示にする
     }
-
-    /// 選択されたジャンルを送信＆ゲームスタート
-    document.getElementById("select").addEventListener("click", function() {
-      var dropdown = document.getElementById("dropdown");
-      var selectedGenre = dropdown.value;
-      var message = {
-        action: "startGame",
-        genre: selectedGenre
-      };
-      webSocket.send(JSON.stringify(message)); 
-    });
-
+    
     //一文字ずつ表示
     function displayCharbychar(problemStatement, callback){
       for(let i=0;i<problemStatement.length;i++){
@@ -207,6 +255,57 @@
       }
     }
     
+    
+    //現在の答えの文字列を判別し、適切なリストを選択する関数
+    function selectDisplayWordList(nowWord) {
+      // カタカナチェック
+      const isKatakana = /^[\u30A0-\u30FF]+$/.test(nowWord);
+      // 英語チェック
+      const isEnglish = /^[A-Za-z]+$/.test(nowWord);
+    // 数字チェック
+      const isDigit = /^[0-9]+$/.test(nowWord);
+
+      if (isKatakana) {
+        usingList = katakana;
+      } else if (isEnglish) {
+        usingList = english;
+      } else if (isDigit) {
+        usingList = numbers;
+      } else {
+        usingList = hiragana;
+      }
+    }
+
+    // Fisher-Yatesアルゴリズムを使用して配列をシャッフルする関数
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+    
+    document.addEventListener('keydown', function(event) {
+      if (!isAnswerMode) return;
+      switch (event.key) {
+        case 'ArrowUp':
+          console.log("upButton");
+          document.getElementById("upButton").click();
+          break;
+        case 'ArrowLeft':
+          console.log("leftButton");
+          document.getElementById("leftButton").click();
+          break;
+        case 'ArrowRight':
+          console.log("rightButton");
+          document.getElementById("rightButton").click();
+          break;
+        case 'ArrowDown':
+          console.log("downButton");
+          document.getElementById("downButton").click();
+          break;
+      }
+    });
     // ランダムなひらがなをボタンに設定する関数
     function updateAnswerButtons() {
       displayword_4 = [];
@@ -223,73 +322,39 @@
         displayIndex += 1;
       });
       currentIndex += 1;//次の文字のインデックスへ
+      isAnswerMode = true;
     }
-
-    //現在の答えの文字列を判別し、適切なリストを選択する関数
-    function selectDisplayWordList(nowWord) {
-    // カタカナチェック
-      const isKatakana = /^[\u30A0-\u30FF]+$/.test(nowWord);
-    // 英語チェック
-      const isEnglish = /^[A-Za-z]+$/.test(nowWord);
-    // 数字チェック
-      const isDigit = /^[0-9]+$/.test(nowWord);
-
-      if (isKatakana) {
-          usingList = katakana;
-      } else if (isEnglish) {
-          usingList = english;
-      } else if (isDigit) {
-          usingList = numbers;
-      } else {
-          usingList = hiragana;
-      }
-    }
-
-    // Fisher-Yatesアルゴリズムを使用して配列をシャッフルする関数
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-
-
+    
     function clickButtonAnswer(text) {
       const answerInput = document.getElementById("inputText");
       answerInput.textContent += text;
       if (currentAnswer.length <= currentIndex) {
         sendAnswer(); // 解答の文字数分入力したら、強制的に解答を送信
-      } else {
-        updateAnswerButtons(); // ボタンを再度更新
+        isAnswerMode = false;
+      } else{
+        updateAnswerButtons();
       }
     }
 
-    document.addEventListener('keydown', function(event) {
-      let activeButton = null;
-      switch (event.key) {
-        case 'ArrowUp':
-          console.log("upButton");
-          var txt = document.getElementById("upButton").textContent;
-          clickButtonAnswer(txt);
-          break;
-        case 'ArrowLeft':
-          console.log("leftButton");
-          var txt = document.getElementById("leftButton").textContent;
-          clickButtonAnswer(txt);
-          break;
-        case 'ArrowRight':
-          console.log("rightButton");
-          var txt = document.getElementById("rightButton").textContent;
-          clickButtonAnswer(txt);
-          break;
-        case 'ArrowDown':
-          console.log("downButton");
-          var txt = document.getElementById("downButton").textContent;
-          clickButtonAnswer(txt);
-          break;
-      }
-    });
+    function startTimer(timeout) {
+      var timeLeft = timeout;
+      var timerElement = document.getElementById("timer");
+      
+      clearInterval(timer); // 既存のタイマーをクリア
+
+      timer = setInterval(function() {
+        timerElement.textContent = timeLeft;
+        timeLeft--;
+        
+        if (timeLeft < 0) {
+          clearInterval(timer);
+          webSocket.send(JSON.stringify({
+            action: "giveUp",
+          })); 
+        }
+      }, 1000);
+    }
+    
 
     //結果を表示
     function makeScores(scores){
@@ -309,6 +374,33 @@
         row.appendChild(scoreCell);
         resultTable.appendChild(row);
       });
+    }
+
+    // 設定を適用する関数
+    function applyAudioSettings() {
+      const bgmEnabled = localStorage.getItem('bgmEnabled') === 'true';
+      const effectsEnabled = localStorage.getItem('effectsEnabled') === 'true';
+      const bgmVolume = localStorage.getItem('bgmVolume') || '50';
+      const effectsVolume = localStorage.getItem('effectsVolume') || '50';
+      
+      // BGMの設定を適用
+      if (bgmEnabled) {
+        bgmAudio.volume = parseInt(bgmVolume) / 100;
+        bgmAudio.play();
+      } else {
+         bgmAudio.pause();
+      }
+      
+      // 効果音の設定を適用
+      // effectsAudio.volume = parseInt(effectsVolume) / 100;
+      // effectsAudio.muted = !effectsEnabled;
+    }
+
+    // 効果音を再生する関数（例）
+    function playEffectSound() {
+      if (localStorage.getItem('effectsEnabled') === 'true') {
+        effectsAudio.play();
+      }
     }
 
     function Home() {
