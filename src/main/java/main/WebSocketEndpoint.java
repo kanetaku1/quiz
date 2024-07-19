@@ -68,6 +68,7 @@ public class WebSocketEndpoint {
         broadcastUserList();
         if (user != null) {
             quizManager.removeUser(user.getUsername());
+            user.setScore(0);
         }
     }
 
@@ -132,6 +133,7 @@ public class WebSocketEndpoint {
             .put("type", "gameEnd")
             .put("scores", scoreBuilder)
             .toString());
+        onClose(session);
     }
 
     private void broadcastUserList() {

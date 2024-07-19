@@ -50,7 +50,7 @@ h1 {
   margin-bottom: 20px;
 }
 
-.answerSection {
+#answerSection {
   position: relative;
   text-align: center; 
   height: 200px; 
@@ -61,30 +61,5 @@ h1 {
   height: 50px; 
   margin: 10px; 
   font-size: 16px; 
-}
-
-.cross-layout-position-top {
-  position: absolute;
-  top: 230px;
-  transform: translateX(-50%);
-  position: center;
-}
-
-.cross-layout-position-left {
-  position: absolute;
-  top: 280px;
-  left: 440px;
-}
-
-.cross-layout-position-right {
-  position: absolute;
-  top: 280px;
-  right: 420px;
-}
-
-.cross-layout-position-bottom {
-  position: absolute;
-  bottom: -200px;
-  left: 50%;
-  transform: translateX(-50%);
+  border: 1px solid #000;
 }
