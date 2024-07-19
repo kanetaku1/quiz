@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>音楽プレーヤー</title>
+<link rel="stylesheet" href="onsei.css">
+</head>
+<body>
+
+<audio id="myAudio" loop>
+  <source src="../resources/Specification.mp3" type="audio/mpeg">
+</audio>
+
+<button id="playButton">再生</button>
+<button id="pauseButton" onclick="pauseAudio()">停止</button>
+<script>
+const audio = new Audio('Specification.mp3');
+document.getElementById('playButton').addEventListener('click', () => {
+  audio.play();
+});
+
+function pauseAudio() {
+    audio.pause();
+  }
+</script>
+
+
+</body>
+</html>

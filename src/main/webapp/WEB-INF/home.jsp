@@ -34,7 +34,7 @@
             <a href="Make">作問モード</a>
         </button>
         <button>
-            <a href="#">設定</a>
+            <a href="Setting">設定</a>
         </button>
     </div>
 </body>
