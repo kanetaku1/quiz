@@ -51,6 +51,7 @@ public class WebSocketEndpoint {
                 break;
             case "startGame":
                 if(user.getUserType() == User.UserType.HOST) {
+                    broadcastMessage(createJsonMessage("room", "GAME_START"));
                     startGame(jsonMessage);
                 }
                 break;
@@ -111,7 +112,7 @@ public class WebSocketEndpoint {
                 String nextQuiz = quizManager.getNextQuestion();
                 broadcastMessage(new JSONObject(nextQuiz)
                     .put("type", "quiz")
-                    .put("timeout", 40)
+                    .put("timeout", 30)
                     .toString());
             } else {
                 endGame();
