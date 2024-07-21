@@ -28,17 +28,16 @@
         <option value="new">新しいジャンルを追加</option>
       </select>
       <input type="text" name="newGenre" id="newGenreInput" cols="100" rows="1" style="display:none;" placeholder="新しいジャンルを入力">
-    
-    <h2 >問題<br>
-      <textarea name="question" id="questionInput" cols="100" rows="5" oninput="checkFields()"></textarea>
-    </h2>
-    <h2>解答<br>
-      <input type="text" name="answer" id="answerInput" cols="100" rows="1" oninput="validateInput(this); checkFields()" >
-    </h2>
-    <p id="errorMessage">ひらがな、カタカナ、アルファベット、数字、長音符のみ入力してください。</p>
-    <input type="file" name="imageFile" id="image" accept="image/*, .png, .jpg, .jpeg"><br>
-    <div id="upload"></div>
-    <input type="submit" value="Submit">
+      <br><input type="file" name="imageFile" id="image" accept="image/*, .png, .jpg, .jpeg"><br>
+      <div id="upload"></div>
+      <h2 >問題<br>
+        <textarea name="question" id="questionInput" cols="100" rows="5" oninput="checkFields()"></textarea>
+      </h2>
+      <h2>解答<br>
+        <input type="text" name="answer" id="answerInput" cols="100" rows="1" oninput="validateInput(this); checkFields()" >
+      </h2>
+      <p id="errorMessage">ひらがな、カタカナ、アルファベット、数字、長音符のみ入力してください。</p>
+      <input type="submit" value="Submit">
     <p id="formError">すべてのフィールドを入力してください。</p>
   </form>
 
@@ -95,6 +94,7 @@
         return false;
       } else {
         formError.style.display = "none";
+        alert('問題が作成されました。');
         return true;
       }
     }

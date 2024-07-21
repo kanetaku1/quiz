@@ -28,13 +28,13 @@
             <a href="Search">閲覧モード</a>
         </button>
         <button>
-            <a href="Quiz">回答モード</a>
+            <a href="Quiz">クイズモード</a>
         </button>
         <button>
             <a href="Make">作問モード</a>
         </button>
         <button>
-            <a href="#">設定</a>
+            <a href="Setting">設定</a>
         </button>
     </div>
 </body>

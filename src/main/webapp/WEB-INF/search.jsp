@@ -21,12 +21,12 @@
     <h1>問題ジャンル</h1>
     <form action="searchMode" method="get">
       <select name="selectedGenre">
-          <option value="">ジャンルを選択</option>
-          <% for (String genre : genreList) { %>
-              <option value="<%= genre %>" <%= genre.equals(selectedGenre) ? "selected" : "" %>>
-                <%= genre %>
-              </option>
-          <% } %>
+        <option value="">ジャンルを選択</option>
+        <% for (String genre : genreList) { %>
+          <option value="<%= genre %>" <%= genre.equals(selectedGenre) ? "selected" : "" %>>
+            <%= genre %>
+          </option>
+        <% } %>
       </select>
       <input type="submit" value="問題を表示">
     </form>
@@ -78,7 +78,12 @@
       quiz_Detail.style.display = "block";
       question.textContent = quizData.questions[index];
       answer.textContent = quizData.answers[index];
-      image.src = quizData.imagePaths[index];
+      if (quizData.imagePaths[index] != "") {
+        image.style.display = "block";
+        image.src = quizData.imagePaths[index];
+      } else {
+        image.style.display = "none"; //写真パスがない場合、非表示にする
+      }
     }
 
     function closeQuestionDetail() {
