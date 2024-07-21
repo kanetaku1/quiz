@@ -33,7 +33,6 @@
       <source src="resources/Quiz-Question03-1.mp3" type="audio/mpeg">
     </audio>
   </audio>
-  
 
   <div id="userLog">
     <div id="userList">

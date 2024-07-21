@@ -22,12 +22,12 @@ public class QuizManager {
     }
   }
 
-  public void addUser(User user){
-    users.put(user.getUsername(), user);
+  public void addUser(String sessionID, User user){
+    users.put(sessionID, user);
   }
 
-  public void removeUser(String username){
-    users.remove(username);
+  public void removeUser(String sessionID){
+    users.remove(sessionID);
   }
 
   public String getNextQuestion() {

@@ -24,7 +24,7 @@ public class WebSocketEndpoint {
         sessions.put(sessionId, session);
        
         if (user != null) {
-            quizManager.addUser(user);
+            quizManager.addUser(sessionId, user);
             broadcastMessage(createJsonMessage("room", user.getUsername() + " join."));
             broadcastUserList();
         } else {
@@ -68,7 +68,7 @@ public class WebSocketEndpoint {
         broadcastMessage(createJsonMessage("room", user.getUsername() + " leave."));
         broadcastUserList();
         if (user != null) {
-            quizManager.removeUser(user.getUsername());
+            quizManager.removeUser(sessionId);
             user.setScore(0);
         }
     }
@@ -76,7 +76,7 @@ public class WebSocketEndpoint {
     @OnError
     public void onError(Session session, Throwable throwable) {
         sessions.remove(sessionId);
-        UserManager.removeUser(sessionId);
+        quizManager.removeUser(sessionId);
         throwable.printStackTrace();
     }
 
