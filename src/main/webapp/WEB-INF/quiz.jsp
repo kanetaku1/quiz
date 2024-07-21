@@ -16,7 +16,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/quiz.css">
   <link rel="stylesheet" href="css/result.css">
-  <title>ゲームモード</title> 
+  <title>クイズモード</title> 
 </head>
 <body>
   <audio id="bgmAudio" loop>
