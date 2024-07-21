@@ -8,7 +8,9 @@ import java.nio.charset.StandardCharsets;
 public class SendQuiz {
   public void SendData(String imagePath, String genre, String question, String answer){
     try {
-      URL url = new URL("http://localhost/minhaya/quiz_post.php");
+      String host = "localhost";
+      @SuppressWarnings("deprecation")
+      URL url = new URL("http://" + host + "/minhaya/quiz_post.php");
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
       connection.setDoOutput(true);

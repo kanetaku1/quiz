@@ -14,7 +14,9 @@ public class GetQuiz{
   public void getQuizData(String genre){
     try {
       // PHPファイルのURL
-      URL url = new URL("http://localhost/minhaya/quiz_get.php?genre=" + genre);
+      String host = "localhost";
+      @SuppressWarnings("deprecation")
+      URL url = new URL("http://" + host + "/minhaya/quiz_get.php?genre=" + genre);
       // HTTPリクエストの作成
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("GET");

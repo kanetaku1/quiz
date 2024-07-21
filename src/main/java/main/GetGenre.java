@@ -14,7 +14,9 @@ public class GetGenre {
   public List<String> getDataFromAPI() throws IOException {
     List<String> genreList = new ArrayList<>();
     // APIからデータを取得する処理
-    URL url = new URL("http://localhost/minhaya/genre_get.php");
+    String host = "localhost";
+    @SuppressWarnings("deprecation")
+    URL url = new URL("http://" + host + "/minhaya/genre_get.php");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
     // レスポンスを取得
