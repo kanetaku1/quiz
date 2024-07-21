@@ -1,3 +1,9 @@
+.girl {
+    position: fixed;
+    left: 60%;
+    top: 70%;
+    transform: translateX(-50%) translateY(-50%);
+  }
 h2 {
   background:#eaffdf; 
 border: #82d35a 1px solid; 

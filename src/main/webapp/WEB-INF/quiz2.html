@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../make.css">
+</head>
+<body>
+    <div id="gameScreen" style="display:none;">
+        <p id="userType"><%= user.getUserType() %></p>
+        <h1>ジャンル</h1>
+        <p id="genre"></p>
+        <h1>問題</h1>
+        <p id="quiz"></p>
+        <h1>写真パス</h1>
+        <img id="image" src="#">
+        <div id="gameLog">ゲームログ</div>
+        <input type="text" id="inputText" name="inputText">
+        <button onclick="sendAnswer()">Send</button>
+      </div>
+</body>
+</html>
