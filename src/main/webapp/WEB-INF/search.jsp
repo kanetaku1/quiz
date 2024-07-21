@@ -78,7 +78,12 @@
       quiz_Detail.style.display = "block";
       question.textContent = quizData.questions[index];
       answer.textContent = quizData.answers[index];
-      image.src = quizData.imagePaths[index];
+      if (quizData.imagePaths[index] != "") {
+        image.style.display = "block";
+        image.src = quizData.imagePaths[index];
+      } else {
+        image.style.display = "none"; //写真パスがない場合、非表示にする
+      }
     }
 
     function closeQuestionDetail() {

@@ -51,6 +51,7 @@ public class WebSocketEndpoint {
                 break;
             case "startGame":
                 if(user.getUserType() == User.UserType.HOST) {
+                    broadcastMessage(createJsonMessage("room", "GAME_START"));
                     startGame(jsonMessage);
                 }
                 break;
@@ -68,6 +69,7 @@ public class WebSocketEndpoint {
         broadcastUserList();
         if (user != null) {
             quizManager.removeUser(user.getUsername());
+            user.setScore(0);
         }
     }
 
@@ -110,7 +112,7 @@ public class WebSocketEndpoint {
                 String nextQuiz = quizManager.getNextQuestion();
                 broadcastMessage(new JSONObject(nextQuiz)
                     .put("type", "quiz")
-                    .put("timeout", 40)
+                    .put("timeout", 30)
                     .toString());
             } else {
                 endGame();
@@ -132,6 +134,7 @@ public class WebSocketEndpoint {
             .put("type", "gameEnd")
             .put("scores", scoreBuilder)
             .toString());
+        onClose(session);
     }
 
     private void broadcastUserList() {
