@@ -16,6 +16,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/quiz.css">
   <link rel="stylesheet" href="css/result.css">
+  <link rel="stylesheet" href="WEB-INF/quiz-host.css">
   <title>ゲームモード</title> 
 </head>
 <body>
@@ -29,67 +30,98 @@
     <source src="incorrect.mp3" type="audio/mpeg">
   </audio> -->
 
-  <div id="userLog">
-    <div id="userList">
-    </div>
+  <div class="userLog" id="userLog">
+    <div class="genre_title">ジャンル</div>
+    <div id="userList" class="userList"></div>
   </div>
-  <div id="roomLog">
-    ルームログ
+  <div id="roomLog" style="display:none;">
+      ルームログ
   </div>
   <div id="timer"></div>
 
   <div id="waitingRoom">
-    <h1>ルーム作成</h1>
-    <% if(user.getUserType() == User.UserType.HOST) { %>
-      <button id="select">Start</button>
-      <select id="dropdown">
-        <option value="">-</option>
-        <% for (String genre : genreList) { %>
-          <option value="<%= genre %>"><%= genre %></option>
-        <% } %>
-      </select>
-      <script>
-          /// 選択されたジャンルを送信＆ゲームスタート
-        document.getElementById("select").addEventListener("click", function() {
-          var dropdown = document.getElementById("dropdown");
-          var selectedGenre = dropdown.value;
-          webSocket.send(JSON.stringify({
-            action: "startGame",
-            genre: selectedGenre
-          })); 
-        });
-      </script>
-    <% } else { %>
-      <p>ホストがゲームを開始するのを待っています...</p>
-    <% } %>
-    <br>
-    <div id="chatLog"></div>
-    <input type="text" id="message" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send</button>
+    <div class="content_waitingRoom">
+      <% if(user.getUserType() == User.UserType.HOST) { %>
+        <div class="content_left_host"><!-- ジャンル選択画面(ホストのみ)のときのcontent_leftクラス -->
+          <h1 class="title_text_host">ジャンル選択</h1>
+          <div class="content_genre">
+              <button class="select" id="select">Start</button>
+              <div class="genre_select">
+                  <select class="dropdown" required>
+                    <% for (String genre : genreList) { %>
+                      <option value="<%= genre %>"><%= genre %></option>
+                    <% } %>
+                  </select>
+                  <span class="select_highlight"></span>
+                  <span class="select_selectbar"></span>
+                  <label class="select_label">Choose</label>
+              </div>
+          </div>
+        </div>
+        <script>
+            /// 選択されたジャンルを送信＆ゲームスタート
+          document.getElementById("select").addEventListener("click", function() {
+            var dropdown = document.getElementById("dropdown");
+            var selectedGenre = dropdown.value;
+            webSocket.send(JSON.stringify({
+              action: "startGame",
+              genre: selectedGenre
+            })); 
+          });
+        </script>
+      <% } else { %>
+        <div class="content_left_guest"><!-- ゲスト待機画面のときのcontent_leftクラス -->
+          <h1 class="title_text_guest">ホストがゲームを開始するのを待っています...</h1>
+        </div>
+      <% } %>
+      <br>
+      <div class="content_chats">
+        <div id="chatLog">kkk</div>
+        <div class="input-wrapper">
+            <div class="message_box">
+                <label for="name">
+                    <input type="text" id="message" placeholder="Type a message...">
+                </label>
+            </div>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div id="gameScreen" style="display:none;">
+  <div id="gameScreen">
     <!-- <p id="userType"><%= user.getUserType() %></p> -->
-    <h3>ジャンル</h3>
-    <p id="genre"></p>
-    <h1>問題</h1>
-    <p id="quiz"></p>
-    <div id="imageSection">
-      <h1>写真パス</h1>
-      <img id="image" src="#">
-    </div>
-    <div id="gameLog">ゲームログ</div>
-    <div id="answerSection" style="display:none;">
-      <p id="inputText"></p>
-      <button id="upButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
-      <button id="downButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">下</button>
-      <button id="leftButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">左</button>
-      <button id="rightButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">右</button>
-    </div>         
-    
-    <div id="displayAnswer" style="display:none;">
-      <h1>A.</h1>
-      <h3 id="display_answer">answer</h3>
+    <div class="quiz-container">
+        <div class="quiz_wrapper">
+            <div class="quiz_state">
+                <h1>Q.</h1>
+                <p id="quiz"></p>
+            </div>
+            <div class="imageSection" id="imageSection">
+              <img class="image" id="image" src="#">
+            </div>
+        </div>
+        <div class="answerSection" id="answerSection">
+          <div class="inputText">
+              <div id="inputText"></div>
+          </div>
+          <div id="gameLog" style="display:none">ゲームログ</div>
+          <div class="buttons" id="buttons" style="display:none;">
+            <div class="buttons_B">
+                <button id="upButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
+                <div class="buttons_A">
+                    <button id="leftButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">左</button>
+                    <div class="centerButton"></div>
+                    <button id="rightButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">右</button>
+                </div>
+                <button id="downButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">下</button>
+            </div>
+          </div>    
+          <div class="displayAnswer" id="displayAnswer">
+            <h1>A.</h1>
+            <p id="display_answer">answer</p>
+          </div>
+        </div>
     </div>
   </div>
 
