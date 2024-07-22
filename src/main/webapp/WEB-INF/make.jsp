@@ -10,34 +10,54 @@
   <title>作問モード</title>
 </head>
 <body>
-  <button onclick="Home()">ホームに戻る</button>
+  <h1>作問モード</h1>
+  <div class="button-container">
+    <button onclick="Home()">ホームに戻る</button>
+  </div>
+  <br>
   <form action="makeMode" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
-    <h2>ジャンル</h2>
-      <select name="genre" id="genreSelect" onchange="toggleNewGenreInput()">
-        <option value="">ジャンルを選択してください</option>
-        <% 
-          List<String> genreList = (List<String>) request.getAttribute("genreList");
-          if (genreList != null) {
-            for (String genre : genreList) {
-        %>
-              <option value="<%= genre %>"><%= genre %></option>
-        <% 
-            }
-          }
-        %>
-        <option value="new">新しいジャンルを追加</option>
-      </select>
-      <input type="text" name="newGenre" id="newGenreInput" cols="100" rows="1" style="display:none;" placeholder="新しいジャンルを入力">
-      <br><input type="file" name="imageFile" id="image" accept="image/*, .png, .jpg, .jpeg"><br>
-      <div id="upload"></div>
-      <h2 >問題<br>
-        <textarea name="question" id="questionInput" cols="100" rows="5" oninput="checkFields()"></textarea>
-      </h2>
-      <h2>解答<br>
-        <input type="text" name="answer" id="answerInput" cols="100" rows="1" oninput="validateInput(this); checkFields()" >
-      </h2>
+    <div class="container_genre_file">
+      <div class="container_genre">
+        <div class="genre_select">
+          <select name="genre" class="dropdown" id="genreSelect" onchange="toggleNewGenreInput()" required>
+            <option value=""></option>
+            <% 
+              List<String> genreList = (List<String>) request.getAttribute("genreList");
+              if (genreList != null) {
+                for (String genre : genreList) {
+            %>
+                  <option value="<%= genre %>"><%= genre %></option>
+            <% 
+                }
+              }
+            %>
+            <option value="new">新しいジャンルを追加</option>
+          </select>
+          <span class="select_highlight"></span>
+          <span class="select_selectbar"></span>
+          <label class="select_label">Choose</label>
+          <br>
+        </div>
+        <input type="text" name="newGenre" id="newGenreInput" cols="100" rows="1" style="display:none;" placeholder="新しいジャンルを入力">
+      </div>
+      <div class="container_file">
+        <label class="file__label">
+          ファイルを選択
+          <input type="file" name="imageFile" id="image" accept="image/*, .png, .jpg, .jpeg">
+        </label>
+        <div id="upload" class="imageSection"></div>
+      </div>
+    </div>
+    <div class="container_question">
+      <p>Question.</p>
+      <textarea name="question" id="questionInput" cols="100" rows="5" oninput="checkFields()"></textarea>
+    </div>
+    <div class="container_answer">
+      <p>Answer.</p>
+      <input type="text" name="answer" id="answerInput" cols="100" rows="1" oninput="validateInput(this); checkFields()" >
       <p id="errorMessage">ひらがな、カタカナ、アルファベット、数字、長音符のみ入力してください。</p>
-      <input type="submit" value="Submit">
+    </div>
+    <input type="submit" value="Submit">
     <p id="formError">すべてのフィールドを入力してください。</p>
   </form>
 
@@ -52,8 +72,8 @@
       // ファイルが読み込まれたときに実行する
       reader.onload = function (e) {
         const img = document.createElement("img");
+        img.className = "image";
         img.src = e.target.result;
-        img.style.maxWidth = "100%"
         preview.appendChild(img);
       }
       reader.readAsDataURL(file);

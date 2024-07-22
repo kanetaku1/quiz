@@ -52,18 +52,18 @@
         <div class="content_left_host"><!-- ジャンル選択画面(ホストのみ)のときのcontent_leftクラス -->
           <h1 class="title_text_host">ジャンル選択</h1>
           <div class="content_genre">
-              <button class="select" id="select">Start</button>
-              <div class="genre_select">
-                  <select class="dropdown" id="dropdown">
-                    <option value="">-</option>
-                    <% for (String genre : genreList) { %>
-                      <option value="<%= genre %>"><%= genre %></option>
-                    <% } %>
-                  </select>
-                  <span class="select_highlight"></span>
-                  <span class="select_selectbar"></span>
-                  <label class="select_label">Choose</label>
-              </div>
+            <button class="select" id="select">Start</button>
+            <div class="genre_select">
+              <select class="dropdown" id="dropdown" required>
+                <option value=""></option>
+                <% for (String genre : genreList) { %>
+                  <option value="<%= genre %>"><%= genre %></option>
+                <% } %>
+              </select>
+              <span class="select_highlight"></span>
+              <span class="select_selectbar"></span>
+              <label class="select_label">Choose</label>
+            </div>
           </div>
         </div>
         <script>
@@ -86,12 +86,10 @@
       <div class="content_chats">
         <div id="chatLog"></div>
         <div class="input-wrapper">
-            <div class="message_box">
-                <label for="name">
-                    <input type="text" id="message" placeholder="Type a message...">
-                </label>
-            </div>
-            <button onclick="sendMessage()">Send</button>
+          <div class="message_box">
+            <input type="text" id="message" placeholder="Type a message...">
+          </div>
+          <button onclick="sendMessage()">Send</button>
         </div>
       </div>
     </div>
