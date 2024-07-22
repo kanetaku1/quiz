@@ -15,7 +15,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/result.css">
-  <link rel="stylesheet" href="css/quiz-host.css">
+  <link rel="stylesheet" href="css/quiz-room.css">
   <title>クイズモード</title> 
 </head>
 <body>
@@ -35,7 +35,7 @@
   </audio>
 
   <div class="userLog" id="userLog">
-    <div class="genre_title">ジャンル</div>
+    <div id="genre" class="genre_title"></div>
     <div id="userList" class="userList"></div>
   </div>
   <div id="roomLog" style="display:none;">
@@ -54,7 +54,8 @@
           <div class="content_genre">
               <button class="select" id="select">Start</button>
               <div class="genre_select">
-                  <select class="dropdown" id="dropdown" required>
+                  <select class="dropdown" id="dropdown">
+                    <option value="">-</option>
                     <% for (String genre : genreList) { %>
                       <option value="<%= genre %>"><%= genre %></option>
                     <% } %>
@@ -83,7 +84,7 @@
       <% } %>
       <br>
       <div class="content_chats">
-        <div id="chatLog">kkk</div>
+        <div id="chatLog"></div>
         <div class="input-wrapper">
             <div class="message_box">
                 <label for="name">
@@ -252,9 +253,10 @@
           case "Incorrect!":
             playEffectSound(incorrectSound);
         }
+        buttons.style.display = "none";
+        gameLog.style.display = "flex";
         gameLog.innerHTML = "<p>" + data.content + "</p>";
       } else if(data.type === "displayAnswer"){
-        buttons.style.display = "none";
         gameLog.style.display = "flex";
         displayAnswer.style.visibility = "visible";
         display_answer.textContent = currentAnswer;
