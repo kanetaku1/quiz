@@ -14,8 +14,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/quiz.css">
   <link rel="stylesheet" href="css/result.css">
+  <link rel="stylesheet" href="css/quiz-host.css">
   <title>クイズモード</title> 
 </head>
 <body>
@@ -34,67 +34,101 @@
     </audio>
   </audio>
 
-  <div id="userLog">
-    <div id="userList">
-    </div>
+  <div class="userLog" id="userLog">
+    <div class="genre_title">ジャンル</div>
+    <div id="userList" class="userList"></div>
   </div>
-  <div id="roomLog">
-    ルームログ
+  <div id="roomLog" style="display:none;">
+      ルームログ
   </div>
-  <div id="timer"></div>
+  <div id="Timer" class="Timer" style="visibility:hidden">
+    <div class="timer_text">残り..</div>
+    <div id="timer"></div>
+  </div>
 
   <div id="waitingRoom">
-    <h1>ルーム作成</h1>
-    <% if(user.getUserType() == User.UserType.HOST) { %>
-      <button id="select">Start</button>
-      <select id="dropdown">
-        <option value="">-</option>
-        <% for (String genre : genreList) { %>
-          <option value="<%= genre %>"><%= genre %></option>
-        <% } %>
-      </select>
-      <script>
-          /// 選択されたジャンルを送信＆ゲームスタート
-        document.getElementById("select").addEventListener("click", function() {
-          var dropdown = document.getElementById("dropdown");
-          var selectedGenre = dropdown.value;
-          webSocket.send(JSON.stringify({
-            action: "startGame",
-            genre: selectedGenre
-          })); 
-        });
-      </script>
-    <% } else { %>
-      <p>ホストがゲームを開始するのを待っています...</p>
-    <% } %>
-    <br>
-    <div id="chatLog"></div>
-    <input type="text" id="message" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send</button>
+    <div class="content_waitingRoom">
+      <% if(user.getUserType() == User.UserType.HOST) { %>
+        <div class="content_left_host"><!-- ジャンル選択画面(ホストのみ)のときのcontent_leftクラス -->
+          <h1 class="title_text_host">ジャンル選択</h1>
+          <div class="content_genre">
+              <button class="select" id="select">Start</button>
+              <div class="genre_select">
+                  <select class="dropdown" id="dropdown" required>
+                    <% for (String genre : genreList) { %>
+                      <option value="<%= genre %>"><%= genre %></option>
+                    <% } %>
+                  </select>
+                  <span class="select_highlight"></span>
+                  <span class="select_selectbar"></span>
+                  <label class="select_label">Choose</label>
+              </div>
+          </div>
+        </div>
+        <script>
+            /// 選択されたジャンルを送信＆ゲームスタート
+          document.getElementById("select").addEventListener("click", function() {
+            var dropdown = document.getElementById("dropdown");
+            var selectedGenre = dropdown.value;
+            webSocket.send(JSON.stringify({
+              action: "startGame",
+              genre: selectedGenre
+            })); 
+          });
+        </script>
+      <% } else { %>
+        <div class="content_left_guest"><!-- ゲスト待機画面のときのcontent_leftクラス -->
+          <h1 class="title_text_guest">ホストがゲームを開始するのを待っています...</h1>
+        </div>
+      <% } %>
+      <br>
+      <div class="content_chats">
+        <div id="chatLog">kkk</div>
+        <div class="input-wrapper">
+            <div class="message_box">
+                <label for="name">
+                    <input type="text" id="message" placeholder="Type a message...">
+                </label>
+            </div>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="gameScreen" style="display:none;">
     <!-- <p id="userType"><%= user.getUserType() %></p> -->
-    <h3>ジャンル</h3>
-    <p id="genre"></p>
-    <h1>問題</h1>
-    <p id="quiz"></p>
-    <div id="imageSection">
-      <h1>写真パス</h1>
-      <img id="image" src="#">
-    </div>
-    <div id="gameLog">ゲームログ</div>
-    <div id="answerSection" style="display:none;">
-      <p id="inputText"></p>
-      <button id="upButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
-      <button id="downButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">下</button>
-      <button id="leftButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">左</button>
-      <button id="rightButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">右</button>
-    </div>         
-    
-    <div id="displayAnswer" style="display:none;">
-      <h1>A.</h1>
-      <h3 id="display_answer">answer</h3>
+    <div class="quiz-container">
+        <div class="quiz_wrapper">
+            <div class="quiz_state">
+                <h1>Q.</h1>
+                <p id="quiz"></p>
+            </div>
+            <div class="imageSection" id="imageSection">
+              <img class="image" id="image" src="#">
+            </div>
+        </div>
+        <div class="answerSection" id="answerSection">
+          <div class="inputText">
+              <div id="inputText"></div>
+          </div>
+          <div class="buttons" id="buttons" style="display:none">
+            <div class="buttons_B">
+                <button id="upButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
+                <div class="buttons_A">
+                    <button id="leftButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">左</button>
+                    <div class="centerButton"></div>
+                    <button id="rightButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">右</button>
+                </div>
+                <button id="downButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">下</button>
+            </div>
+          </div>
+          <div id="gameLog" style="display:none">ゲームログ</div>    
+          <div class="displayAnswer" id="displayAnswer">
+            <h1>A.</h1>
+            <p class="display_answer" id="display_answer">answer</p>
+          </div>
+        </div>
     </div>
   </div>
 
@@ -102,7 +136,9 @@
     <div class="button-container">
       <button onclick="Home()">ホームに戻る</button>
     </div>
-    <h1>🌷結果発表🌷</h1>
+    <div class="result_title">
+      <h1>🌷結果発表🌷</h1>
+    </div>
     <table>
       <thead>
         <tr>
@@ -179,13 +215,20 @@
       } else if (data.type === "userList") {
         updateUserList(JSON.parse(data.data));
       } else if (data.type == "quiz") {
-        displayAnswer.style.display = "none";
-        imageSection.style.display = "block";
+        document.getElementById("inputText").textContent ="";
+        document.getElementById("waitingRoom").style.display = "none";
+        displayAnswer.style.visibility = "hidden";
+        gameLog.style.display = "none";
+        document.getElementById("gameScreen").style.display = "block";
+        imageSection.style.display = "flex";
+        document.getElementById("Timer").style.visibility="visible"
         quiz.textContent = "";
         currentAnswer = data.answer;//現在の問題の答えを取得
         playEffectSound(quizSound);
         displayCharbychar(data.question, function() {
-          answerSection.style.display = "block";
+          answerSection.style.display = "flex";
+          buttons.style.display = "flex";
+          document.getElementById("inputText").style.display = "flex";
           currentIndex = 0;
           selectDisplayWordList(currentAnswer[currentIndex]);
           updateAnswerButtons();
@@ -211,8 +254,9 @@
         }
         gameLog.innerHTML = "<p>" + data.content + "</p>";
       } else if(data.type === "displayAnswer"){
-        answerSection.style.display = "none";
-        displayAnswer.style.display = "block";
+        buttons.style.display = "none";
+        gameLog.style.display = "flex";
+        displayAnswer.style.visibility = "visible";
         display_answer.textContent = currentAnswer;
       } else if (data.type === "gameEnd"){
         makeScores(data.scores);
@@ -220,6 +264,7 @@
         document.getElementById("userLog").style.display = "none";
         document.getElementById("timer").style.display = "none";
         document.getElementById("scoreBoard").style.display = "block";
+        document.getElementById("Timer").style.visibility="hidden"
       } 
     };
 
@@ -237,13 +282,13 @@
     /// ユーザ情報を共有
     function updateUserList(userList) {
       const userListElement = document.getElementById('userList');
-      userListElement.innerHTML = '<p>ユーザーリスト</p><br>';
+      userListElement.innerHTML = '';
       userList.forEach(user => {
-        const userElement = document.createElement('p');
-        userElement.innerHTML += `
-          <span class="username">${user.username}</span>
-          <span class="userType">${user.userType}</span>
-          <span class="score">${user.score}</span><br>
+        const userElement = document.createElement('div');
+        userElement.className = `user ${user.userType}`;
+        userElement.innerHTML = `
+        <div class="username">${user.username}</div>
+        <div class="score">${user.score}</div>
         `;
         userListElement.appendChild(userElement);
       });
@@ -258,8 +303,7 @@
         action: "submitAnswer", 
         answer: Answer
       }));
-      answerInput.textContent = "";
-      answerSection.style.display = "none"; // 次の問題のために解答セクションを非表示にする
+      //buttons.style.display = "none"; // 次の問題のために解答セクションを非表示にする
     }
     
     //一文字ずつ表示
