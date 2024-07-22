@@ -6,8 +6,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form</title>
-    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/home.css">
+    <title>ホーム</title>
 </head>
 <body>
     <% 
@@ -25,16 +25,16 @@
 
     <div class="btn">
         <button>
-            <a href="forwardToSearch">閲覧モード</a>
+            <a href="Search">閲覧モード</a>
         </button>
         <button>
-            <a href="forwardToQuiz">回答モード</a>
+            <a href="Quiz">回答モード</a>
         </button>
         <button>
-            <a href="forwardToMake">作問モード</a>
+            <a href="Make">作問モード</a>
         </button>
         <button>
-            <a href="#">設定</a>
+            <a href="Setting">設定</a>
         </button>
     </div>
 </body>
