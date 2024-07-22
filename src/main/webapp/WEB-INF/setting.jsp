@@ -30,7 +30,7 @@
         <input type="range" id="effectsVolume" name="effectsVolume" min="0" max="100" value="50" oninput="document.getElementById('effectsVolumeOutput').innerText = this.value">
         <span id="effectsVolumeOutput">50</span>
       </div>
-      <button type="submit">設定を保存</button>
+      <button class="save_button" type="submit">設定を保存</button>
     </form>
   </div>
   <script>
