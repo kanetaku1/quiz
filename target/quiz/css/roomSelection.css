@@ -1,26 +1,46 @@
-.questionArea{
-  text-align:center;
-  color:aqua;
+body{
+  background-color: bisque;
+  font-family: cursive , 'BIZ UDGothic';
 }
 
 h1 {
   text-align: center;
 }
-.solve_selectStart{
-  padding: 20px 20px;
-  font-size: 32px;
-  position: absolute;
-  top: 300px;
-  left: 700px;
-  background-color: #ffc0cb;
-  border: 8px double #c71585;
+
+button{
+  font-weight: bold;
+  display: block;
+	text-align: center;
+  margin: 10px;
+  width: 120px;
+  font-size: 0.9rem;
+	border-radius: 10px;
+	color: #a15e00;
+	border: 3px solid #a15e00;
+	box-shadow: 5px 5px #a15e00;
+	transition: 0.3s ease-in-out;
 }
-.solve_selectJoin{
-  padding: 20px 20px;
-  font-size: 32px;
-  position: absolute;
-  top: 300px;
-  left: 1000px;
-  background-color: #66ccff;
-  border: 8px double #0090bb;
+
+button:active:hover {
+	box-shadow: none;
+	color: #a15e00;
+}
+
+.solve_selectStart , .solve_selectJoin{
+  font-weight: bold;
+  height:80px;
+  font-size:20px;
+}
+
+.room_buttons{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.solve_selectStart a{
+  color:#fd6f87;
+}
+.solve_selectJoin a{
+  color:#66ccff;
 }

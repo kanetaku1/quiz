@@ -1,0 +1,77 @@
+h2 {
+  display: inline-block;
+  color: #ffffff;
+  background: #647a99bb;
+  padding: 0.5em;
+  line-height: 1.5;
+  vertical-align: middle;
+  border-radius: 30px 0 0 30px;
+}
+
+h2::before {
+  content: '●';
+  color: #ffffff;
+  margin-right: 12px;
+}
+
+label {
+  display: block;
+  font:
+  1rem 'Fira Sans',
+  sans-serif;
+  padding: 0px;
+  display: flex;
+  margin-right: 30px;
+}
+
+h4 {
+  padding: 0px;
+}
+
+body { 
+  background-color: rgb(176, 184, 209);
+}
+
+input {
+  margin: 0.4rem 0;
+  padding: 10px 20px;
+  margin-right: 30px;
+
+}
+
+a {
+  display: inline-block;
+  color: rgb(229, 247, 255);
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  font-size: 15px;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  font-weight: min;
+  background-image: linear-gradient(#7d8bf4 0%, #5e52e3 100%);
+  text-shadow: 1px 1px 1px rgba(161, 197, 203, 0.218);
+  box-shadow: inset 0 2px 0 rgba(142, 154, 169, 0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+  border-bottom: solid 2px #000000;
+}
+
+a:active {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 2px rgba(0, 0, 0, 0.19);
+  border-bottom: none;
+}
+
+.btn {
+  padding: 20px 50px;
+}
+
+.btn button {
+  border: none; /* ボタンの枠線を非表示にする */
+  background: none; /* 背景を透明にする */
+  padding: 0; /* パディングをゼロにする */
+}
+
+.button {
+  margin: 20px;
+}
+
