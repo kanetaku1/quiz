@@ -8,6 +8,7 @@ h1 {
 }
 
 button{
+  font-weight: bold;
   display: block;
 	text-align: center;
   margin: 10px;
@@ -22,7 +23,6 @@ button{
 
 button:active:hover {
 	box-shadow: none;
-	transform: translate(5px, 5px);
 	color: #a15e00;
 }
 
