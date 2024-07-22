@@ -58,15 +58,15 @@
         <div class="detail-quiz">
           <div class="detail-state">
             <p>Q.</p>
-            <p id="question">牡蠣は柿でも、夏期の火器はなーんなんだ？？</p>
+            <p id="question"></p>
           </div>
           <div class="detail-answer">
             <p>A.</p>
-            <p id="answer">白亜紀の秋だっつってんだろ</p>
+            <p id="answer"></p>
           </div>
         </div>
         <div class="imageSection">
-          <img id="image" src="#" alt="問題画像">
+          <img id="image" class="image" src="#" alt="問題画像">
         </div>
         
       </div>
