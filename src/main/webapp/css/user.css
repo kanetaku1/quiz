@@ -110,7 +110,7 @@ body {
 }
 
 .cat img {
-  width: 500px;
+  width: 400px;
   height: auto;
 }
 
@@ -125,20 +125,20 @@ h4 {
   transform: translateX(-50%) translateY(-50%);
 }
 
-.Ncat img {
-  width: 1000px; /* Ncatの画像のみサイズを大きく */
+.dog img {
+  width: 800px; /* Ncatの画像のみサイズを大きく */
 }
 
 .dog {
   position: fixed;
-  left: 53%;
-  top: 20%;
+  left: 85%;
+  top: 72%;
   transform: translateX(-50%) translateY(-50%);
 }
 
 .Bcat {
   position: fixed;
-  left: 20%;
+  left: 17%;
   top: 80%;
   transform: translateX(-50%) translateY(-50%);
 }
