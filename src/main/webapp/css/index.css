@@ -71,16 +71,20 @@ h2 {
 }
 
 .start-btn {
+  display: inline-block;
+  border-radius: 100%;
+  overflow: hidden;
   position: fixed;
   left: 50%;
-  top: 60%;
+  top: 55%;
   transform: translateX(-50%) translateY(-50%);
 }
 
 .start-btn img {
   display: block;
-  width: 20vw;
-  max-width: 200px;
+  width: 100%;
+  height: auto;
+  border-radius: 100%;
 }
 
 @media screen and (max-width: 768px) {

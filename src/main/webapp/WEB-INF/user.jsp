@@ -11,8 +11,19 @@
 <body>
   <form action="userResist" method="post">
     <div class="send">
-      <label for="username"><h4> ユーザ名 :  </h4>  <input type="text" id="username" name="username" required minlength="0" maxlength="20" size="25" /></label>
-        <input type="submit" value="送信する">
+      <label for="username">
+        <h4> ユーザ名 :  </h4>  
+        <input type="text" id="username" name="username" required minlength="0" maxlength="20" size="25" />
+      </label>
+      <input type="submit" value="送信する">
+    </div>
+    <div class="cats">
+      <div class="cat Bcat">
+        <img src="resources/黒猫.jpg" alt="Bcat">
+      </div>
+      <div class="cat dog">
+        <img src="resources/犬.jpg" alt="dog">
+      </div>
     </div>
   </form>
 </body>

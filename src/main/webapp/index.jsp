@@ -25,10 +25,12 @@
     <div class="title">
         <h2>早押しクイズ  ボタンを押してスタート</h2>
     </div>
-    <a class="start-btn" href="User">
-        <img src="resources/スクリーンショット 2024-04-28 1.04.03.png" alt="スタートボタン">
-    </a>
-    <img class="girl" src="resources/手が届く-removebg-preview.png" alt="女の子">
+    <div class="container">
+        <a class="start-btn" href="User">
+            <img src="resources/messageImage_1721670771938.jpg" alt="スタートボタン">
+        </a>
+        <img class="girl" src="resources/手が届く-removebg-preview.png" alt="女の子">
+    </div>
     
     <script>
         function initAudioSettings() {
