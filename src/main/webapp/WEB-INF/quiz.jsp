@@ -206,6 +206,16 @@
       var data = JSON.parse(event.data);
       if (data.type === "chat") {
         chatLog.innerHTML += "<p>" + data.content + "</p>";
+            // 親要素の高さを取得
+        var parentHeight = chatLog.parentElement.clientHeight;
+        // チャットログの高さが親要素の高さを超えた場合
+        while (chatLog.scrollHeight > chatLog.clientHeight) {
+          // チャットログの一番上のメッセージを削除
+          var firstChild = chatLog.firstElementChild;
+          if (firstChild) {
+            chatLog.removeChild(firstChild);
+          }
+        }
       } else if (data.type === "room") {
         roomLog.innerHTML += "<p>" + data.content + "</p>";
         if(data.content === "GAME_START"){
@@ -321,6 +331,9 @@
     
     //現在の答えの文字列を判別し、適切なリストを選択する関数
     function selectDisplayWordList(nowWord) {
+      isKatakana = false;
+      isEnglish = false;
+      isDigit =false;
       // カタカナチェック
       const isKatakana = /^[\u30A0-\u30FF]+$/.test(nowWord);
       // 英語チェック
