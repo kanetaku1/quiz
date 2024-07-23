@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="quiz-host.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="userLog" id="userLog">
+        <div class="genre_title">ジャンル</div>
+        <div id="userList" class="userList"></div>
+    </div>
+    <div id="roomLog" style="display:none;">
+        ルームログ
+    </div>
+    <div id="timer"></div>
+    <div id="waitingRoom"  style="display:none;">
+        <div class="content_waitingRoom">
+            <div class="content_left_host" style="display:none;"><!-- ジャンル選択画面(ホストのみ)のときのcontent_leftクラス -->
+                <h1 class="title_text_host">ジャンル選択</h1>
+                <div class="content_genre">
+                    <button class="select" id="select">Start</button>
+                    <div class="genre_select">
+                        <select class="dropdown" id="dropdown" required>
+                            <option value="" hidden disabled selected></option>
+                            <option value="<%= genre %>">社会</option>
+                            <option value="<%= genre %>">理科</option>
+                        </select>
+                        <span class="select_highlight"></span>
+                        <span class="select_selectbar"></span>
+                        <label class="select_label">Choose</label>
+                    </div>
+                </div>
+            </div>
+            <div class="content_left_guest"><!-- ゲスト待機画面のときのcontent_leftクラス -->
+                <h1 class="title_text_guest">ホストがゲームを開始するのを待っています...</h1>
+            </div>
+            <br>
+            <div class="content_chats">
+                <div id="chatLog">kkk</div>
+                <div class="input-wrapper">
+                    <div class="message_box">
+                        <label for="name">
+                            <input type="text" id="message" placeholder="Type a message...">
+                        </label>
+                    </div>
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameScreen">
+        <!-- <p id="userType"><%= user.getUserType() %></p> -->
+        <div class="quiz-container">
+            <div class="quiz_wrapper">
+                <div class="quiz_state">
+                    <h1>Q.</h1>
+                    <p id="quiz">aaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcccccddddddddddddddddddddddddddddddddddddddddd</p>
+                </div>
+                <div class="imageSection" id="imageSection">
+                  <img class="image" id="image" src="../uploads/hamabe-minami-1024x687.jpg">
+                </div>
+            </div>
+            <div class="answerSection" id="answerSection">
+              <div class="inputText">
+                  <div id="inputText">答えがここに入る予定ではある</div>
+              </div>
+              <div id="gameLog">ゲームログ</div>
+              <div class="buttons" id="buttons" style="display:none;">
+                <div class="buttons_B">
+                    <button id="upButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">上</button>
+                    <div class="buttons_A">
+                        <button id="leftButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">左</button>
+                        <div class="centerButton"></div>
+                        <button id="rightButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">右</button>
+                    </div>
+                    <button id="downButton" class="answer-button" onclick="clickButtonAnswer(this.textContent)">下</button>
+                </div>
+              </div>    
+              <div class="displayAnswer" id="displayAnswer">
+                <h1>A.</h1>
+                <p id="display_answer">answer</p>
+              </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /// 選択されたジャンルを送信＆ゲームスタート
+        document.getElementById("select").addEventListener("click", function() {
+        var dropdown = document.getElementById("dropdown");
+        var selectedGenre = dropdown.value;
+        webSocket.send(JSON.stringify({
+            action: "startGame",
+            genre: selectedGenre
+        })); 
+        });
+
+        function updateUserList(userList) {
+            const userListElement = document.getElementById('userList');
+            userListElement.innerHTML = ''; // 初期化
+            userList.forEach(user => {
+            const userElement = document.createElement('div');
+            userElement.className = `user ${user.userType}`;
+            userElement.innerHTML = `
+            <div class="username">${user.username}</div>
+            <div class="score">${user.score}</div>
+            `;
+            userListElement.appendChild(userElement);
+        });
+        }
+
+        // テスト用データ
+        const testUserList = [
+            { username: 'Alice', userType: 'HOST', score: 100 },
+            { username: 'Bob', userType: 'GUEST', score: 90 },
+            { username: 'Charlie', userType: 'GUEST', score: 80 },
+            { username: 'Dave', userType: 'GUEST', score: 70 }
+        ];
+
+        updateUserList(testUserList);
+    </script>
+</body>
+</html>

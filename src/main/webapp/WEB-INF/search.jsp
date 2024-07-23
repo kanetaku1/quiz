@@ -17,42 +17,62 @@
   <title>閲覧モード</title>
 </head>
 <body>
+  <h1>閲覧モード</h1>
+  <button class="back_button" onclick="Home()">ホームに戻る</button>
   <div id="quiz-list">
-    <h1>問題ジャンル</h1>
-    <form action="searchMode" method="get">
-      <select name="selectedGenre">
-        <option value="">ジャンルを選択</option>
-        <% for (String genre : genreList) { %>
-          <option value="<%= genre %>" <%= genre.equals(selectedGenre) ? "selected" : "" %>>
-            <%= genre %>
-          </option>
-        <% } %>
-      </select>
-      <input type="submit" value="問題を表示">
-    </form>
-    <% if (selectedGenre != null) { %>
-      <h2><%=  selectedGenre %>の問題</h2>
-      <% if (quizList != null) {
-        for (int i = 0; i < quizList.getQuestions().size(); i++) { %>
-          <div class="question">
-            <a href = "#" onclick="showQuestionDetail(<%=i%>)"><%= quizList.getQuestions().get(i) %></a>
+      <div class="select_genre">
+        <form action="searchMode" method="get">
+          <div class="genre_select">
+            <select class="dropdown" id="dropdown" name="selectedGenre" required>
+              <option value=""></option>
+              <% for (String genre : genreList) { %>
+                <option value="<%= genre %>" <%= genre.equals(selectedGenre) ? "selected" : "" %>>
+                  <%= genre %>
+                </option>
+              <% } %>
+            </select>
+            <span class="select_highlight"></span>
+            <span class="select_selectbar"></span>
+            <label class="select_label">Choose</label>
           </div>
-        <% } 
-      } 
-    }%>
-  </div>
+          <input class="submit_button" type="submit" value="問題を表示">
+        </form>
+      </div>
+      <div class="quizs">
+        <% if (selectedGenre != null) { %>
+          <h2><%=  selectedGenre %>の問題</h2>
+          <% if (quizList != null) {
+            for (int i = 0; i < quizList.getQuestions().size(); i++) { %>
+              <div class="question">
+                <a href = "#" onclick="showQuestionDetail(<%=i%>)"><%= quizList.getQuestions().get(i) %></a>
+              </div>
+            <% } 
+          } 
+        }%>
+      </div>
+    </div>
+  
+    <div class="quiz-detail" id="quiz-detail" style="display:none">
+      <h2>問題詳細</h2>
+      <div class="detail-content">
+        <div class="detail-quiz">
+          <div class="detail-state">
+            <p>Q.</p>
+            <p id="question"></p>
+          </div>
+          <div class="detail-answer">
+            <p>A.</p>
+            <p id="answer"></p>
+          </div>
+        </div>
+        <div class="imageSection">
+          <img id="image" class="image" src="#" alt="問題画像">
+        </div>
+        
+      </div>
+      <button class="close-button" onclick="closeQuestionDetail()">閉じる</button>
+    </div> 
 
-  <div id="quiz-detail" style="display:none;">
-    <h2>問題詳細</h2>
-    <img id="image" src="#" alt="問題画像">
-    <p><strong>問題:</strong></p>
-    <p id="question"></p>
-    <p><strong>答え:</strong></p>
-    <p id="answer"></p>
-    <button onclick="closeQuestionDetail()">閉じる</button>
-  </div>
-
-  <button onclick="Home()">ホームに戻る</button>
   <script>
     function Home() {
       window.location.href = 'home';
@@ -78,12 +98,13 @@
       quiz_Detail.style.display = "block";
       question.textContent = quizData.questions[index];
       answer.textContent = quizData.answers[index];
-      if (quizData.imagePaths[index] != "") {
-        image.style.display = "block";
+      if(quizData.imagePaths[index]){
+        image.style.visibility = "visible";
         image.src = quizData.imagePaths[index];
-      } else {
-        image.style.display = "none"; //写真パスがない場合、非表示にする
+      }else{
+        image.style.visibility = "hidden";
       }
+      
     }
 
     function closeQuestionDetail() {
