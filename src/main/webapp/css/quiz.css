@@ -160,10 +160,6 @@ body{
   box-shadow: 5px 5px #a15e00;
 }
 
-#chatLog {
-  flex-grow: 1;
-}
-
 .input-wrapper {
   display: flex;
   align-items: center;
@@ -421,6 +417,12 @@ body{
   align-items: center;
   justify-content: center;
   font-size:30px;
+}
+
+#chatLog {
+  flex-grow: 1;
+  max-height: 100%;
+  overflow-y: auto; 
 }
 
 .Timer {

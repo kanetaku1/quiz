@@ -331,9 +331,6 @@
     
     //現在の答えの文字列を判別し、適切なリストを選択する関数
     function selectDisplayWordList(nowWord) {
-      isKatakana = false;
-      isEnglish = false;
-      isDigit =false;
       // カタカナチェック
       const isKatakana = /^[\u30A0-\u30FF]+$/.test(nowWord);
       // 英語チェック
